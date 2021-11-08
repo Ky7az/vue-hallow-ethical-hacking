@@ -37,7 +37,7 @@
 import axios from 'axios';
 import slugify from 'slugify';
 
-import {AxiosConfig} from '../storage/service'
+import {API_HOST, AxiosConfig} from '../storage/service'
 import MarkdownEditor from '@/components/MarkdownEditor';
 
 export default {
@@ -58,7 +58,7 @@ export default {
     methods: {
         submitForm() {
             var slug = slugify(this.name, {'replacement': '_', 'lower': true});
-            axios.post("http://127.0.0.1:8000/api/soup/articles/", {
+            axios.post(`http://${API_HOST}/api/soup/articles/`, {
                 name: this.name,
                 slug: slug,
                 content: this.content,

@@ -31,7 +31,7 @@
 import axios from 'axios';
 import slugify from 'slugify';
 
-import {AxiosConfig} from '../storage/service'
+import {API_HOST, AxiosConfig} from '../storage/service'
 import MarkdownEditor from '@/components/MarkdownEditor';
 
 export default {
@@ -50,7 +50,7 @@ export default {
     },
     methods: {
         getArticle() {
-            axios.get(`http://127.0.0.1:8000/api/soup/articles/${this.$route.params.slug}/`, AxiosConfig)
+            axios.get(`http://${API_HOST}/api/soup/articles/${this.$route.params.slug}/`, AxiosConfig)
             .then(res => {
                 this.articledetail = res.data;
                 this.selected_tags = this.articledetail.tags.map(tag => tag.name);
@@ -60,13 +60,13 @@ export default {
         articleDelete(articledetail) {
             var is_ok = confirm("Delete Article ?");
             if (is_ok) {
-                axios.delete(`http://127.0.0.1:8000/api/soup/articles/${articledetail.slug}/`, AxiosConfig)
+                axios.delete(`http://${API_HOST}/api/soup/articles/${articledetail.slug}/`, AxiosConfig)
                 .then(this.$router.push('/soup'))
                 .catch(err => console.log(err));
             };
         },
         articleUpdate(articledetail) {
-            axios.put(`http://127.0.0.1:8000/api/soup/articles/${articledetail.slug}/`, {
+            axios.put(`http://${API_HOST}/api/soup/articles/${articledetail.slug}/`, {
                 name: articledetail.name,
                 slug: articledetail.slug,
                 content: articledetail.content,

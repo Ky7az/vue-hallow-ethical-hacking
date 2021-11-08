@@ -22,6 +22,8 @@
 <script>
 import axios from 'axios';
 
+import {API_HOST} from '../storage/service'
+
 export default {
     name: 'Header',
     components: {
@@ -35,7 +37,7 @@ export default {
     },
     methods: {
         login() {
-            axios.post("http://127.0.0.1:8000/auth/", {
+            axios.post(`http://${API_HOST}/auth/`, {
                 username: this.username,
                 password: this.password
             })

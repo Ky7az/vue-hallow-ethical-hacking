@@ -65,7 +65,7 @@
 
 import axios from 'axios';
 
-import {AxiosConfig} from '../storage/service'
+import {API_HOST, AxiosConfig} from '../storage/service'
 
 export default {
     name: 'SoupArticleSearch',
@@ -102,7 +102,7 @@ export default {
     },
     methods: {
         getTags() {
-            axios.get("http://127.0.0.1:8000/api/soup/tags/", AxiosConfig)
+            axios.get(`http://${API_HOST}/api/soup/tags/`, AxiosConfig)
             .then(res => {
                 this.options = res.data.map(tag => tag.name);
                 this.options.sort();

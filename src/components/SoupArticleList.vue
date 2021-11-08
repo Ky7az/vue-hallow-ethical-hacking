@@ -35,7 +35,7 @@
 import axios from 'axios';
 import slugify from "slugify";
 
-import {AxiosConfig} from '../storage/service'
+import {API_HOST, AxiosConfig} from '../storage/service'
 import SoupArticleSearch from '@/components/SoupArticleSearch'
 
 export default {
@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         getArticles() {
-            axios.get(`http://127.0.0.1:8000/api/soup/articles/?${this.search_params}`, AxiosConfig)
+            axios.get(`http://${API_HOST}/api/soup/articles/?${this.search_params}`, AxiosConfig)
             .then(res => (this.articles = res.data))
             .catch(err => console.log(err));
         },
