@@ -104,13 +104,13 @@ export default {
         getTags() {
             axios.get(`http://${API_HOST}/api/soup/tags/`, AxiosConfig)
             .then(res => {
-                this.options = res.data.map(tag => tag.name);
+                this.options = res.data.map(tag => tag.name + ' (' + tag.article_count.toString() + ')');
                 this.options.sort();
             })
             .catch(err => console.log(err));
         },
         onOptionClick({ option, addTag }) {
-            addTag(option);
+            addTag(option.split(' (')[0]);
             this.search_by_tags = '';
         },
         onInput() {
