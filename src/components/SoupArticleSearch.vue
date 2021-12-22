@@ -6,7 +6,7 @@
                     <b-input-group-prepend is-text>
                         <b-icon icon="search" class="orange"></b-icon>
                     </b-input-group-prepend>
-                    <b-form-input type="search" size="sm" v-model="search_by_name_or_content" @input="onInput"></b-form-input>
+                    <b-form-input type="search" size="sm" :value="search_text" @input="onInput($event, 'search_text')"></b-form-input>
                 </b-input-group>
             </b-col>
             <b-col>
@@ -14,7 +14,7 @@
         </b-row> 
         <b-row>
             <b-col class="mb-3">
-                <b-form-tags size="sm" v-model="selected_tags" @input="onInput" no-outer-focus>
+                <b-form-tags size="sm" :value="search_tags" @input="onInput($event, 'search_tags')" no-outer-focus>
                     <template v-slot="{ tags, disabled, addTag, removeTag }">
                         <ul v-if="tags.length > 0" class="list-inline d-inline-block">
                             <li v-for="tag in tags" :key="tag" class="list-inline-item">
@@ -62,22 +62,22 @@
 </template>
 
 <script>
-
-import axios from 'axios';
-
-import {API_HOST, AxiosConfig} from '../storage/service'
+import Vuex from 'vuex'
 
 export default {
     name: 'SoupArticleSearch',
     data() {
         return {
             options: [],
-            search_by_name_or_content: '',
-            search_by_tags: '',
-            selected_tags: []
+            search_by_tags: ''
         }
     },
     computed: {
+        ...Vuex.mapState('soup', [
+            'tags',
+            'search_text',
+            'search_tags'
+        ]),
         criteria() {
             // Compute the search criteria
             return this.search_by_tags.trim().toLowerCase();
@@ -85,7 +85,7 @@ export default {
         availableOptions() {
             const criteria = this.criteria;
             // Filter out already selected options
-            const options = this.options.filter(opt => this.selected_tags.indexOf(opt) === -1);
+            const options = this.options.filter(opt => this.search_tags.indexOf(opt) === -1);
             if (criteria) {
             // Show only options that match criteria
             return options.filter(opt => opt.toLowerCase().indexOf(criteria) > -1);
@@ -101,24 +101,30 @@ export default {
         }
     },
     methods: {
-        getTags() {
-            axios.get(`http://${API_HOST}/api/soup/tags/`, AxiosConfig)
-            .then(res => {
-                this.options = res.data.map(tag => tag.name + ' (' + tag.article_count.toString() + ')');
-                this.options.sort();
-            })
-            .catch(err => console.log(err));
+        ...Vuex.mapActions('soup', [
+            'loadTags',
+            'updateSearchParams'
+        ]),
+        getOptions() {
+            this.options = this.tags.map(tag => tag.name + ' (' + tag.article_count.toString() + ')');
+            this.options.sort();
         },
         onOptionClick({ option, addTag }) {
             addTag(option.split(' (')[0]);
             this.search_by_tags = '';
         },
-        onInput() {
-            this.$emit('updated-search', this.search_by_name_or_content, this.selected_tags);
+        onInput(event, field) {
+            let search = {
+                search_text: this.search_text, 
+                search_tags: this.search_tags
+            };
+            search[field] = event;
+            this.updateSearchParams(search);
+            this.$emit('updated-search');
         }
     },
-    mounted() {
-        this.getTags();
+    created() {
+        this.loadTags().then(() => this.getOptions());
     }
 }
 </script>

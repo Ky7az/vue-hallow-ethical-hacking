@@ -21,11 +21,6 @@ export default {
     name: 'Header',
     components: {
         Login
-    },
-    data() {
-        return {
-        }
     }
 }
 </script>
-

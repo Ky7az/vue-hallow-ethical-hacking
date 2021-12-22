@@ -33,11 +33,9 @@
 </template>
 
 <script>
-
-import axios from 'axios';
+import Vuex from 'vuex'
 import slugify from 'slugify';
 
-import {API_HOST, AxiosConfig} from '../storage/service'
 import MarkdownEditor from '@/components/MarkdownEditor';
 
 export default {
@@ -56,17 +54,20 @@ export default {
         }
     },
     methods: {
+        ...Vuex.mapActions('soup', [
+            'createArticle'
+        ]),
         submitForm() {
-            var slug = slugify(this.name, {'replacement': '_', 'lower': true});
-            axios.post(`http://${API_HOST}/api/soup/articles/`, {
+            let slug = slugify(this.name, {'replacement': '_', 'lower': true});
+            let data = {
                 name: this.name,
                 slug: slug,
                 content: this.content,
                 tags: this.selected_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}))
-
-            }, AxiosConfig)
-            .then(this.$router.push(`/soup/art/${slug}`))
-            .catch(err => console.log(err));
+            }
+            this.createArticle(data).then(() => {
+                this.$router.push(`/soup/art/${slug}`);
+            });
         },
         onTagState(valid, invalid, duplicate) {
             this.valid_tags = valid;

@@ -17,10 +17,10 @@
                                v-bind:title="tag.name">
                             #{{tag.name}}
                         </small>
-                        <a :href="`/soup/art/${article.slug}`">
+                        <router-link :to="`/soup/art/${article.slug}`">
                             <b-icon icon="arrow-up-right-circle" class="orange"></b-icon>
-                        </a>
-                    </b-card-text>
+                        </router-link>
+                        </b-card-text>
                     <template #footer>
                         <small class="text-muted">Updated <timeago :datetime="article.write_date" :auto-update="60"></timeago></small>
                     </template>
@@ -31,11 +31,8 @@
 </template>
 
 <script>
+import Vuex from 'vuex'
 
-import axios from 'axios';
-import slugify from "slugify";
-
-import {API_HOST, AxiosConfig} from '../storage/service'
 import SoupArticleSearch from '@/components/SoupArticleSearch'
 
 export default {
@@ -43,30 +40,18 @@ export default {
     components: {
         SoupArticleSearch
     },
-    data() {
-        return {
-            articles: [],
-            search_params: ''
-        }
+    computed: {
+        ...Vuex.mapState('soup', [
+            'articles'
+        ])
     },
     methods: {
-        getArticles() {
-            axios.get(`http://${API_HOST}/api/soup/articles/?${this.search_params}`, AxiosConfig)
-            .then(res => (this.articles = res.data))
-            .catch(err => console.log(err));
-        },
-        onUpdatedSearch(name_or_content, tags) {
-            let params = []
-            if (name_or_content)
-                params.push('name_or_content=' + name_or_content);
-            if (tags.length)
-                tags.forEach(tag => params.push('tags=' + slugify(tag, {'replacement': '_', 'lower': true})));
-            this.search_params = params.join('&');
-            this.getArticles();
+        ...Vuex.mapActions('soup', [
+            'loadArticles'
+        ]),
+        onUpdatedSearch() {
+            this.loadArticles();
         }
-    },
-    mounted() {
-        this.getArticles();
     }
 }
 </script>

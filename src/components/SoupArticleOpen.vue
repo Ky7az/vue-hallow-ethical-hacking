@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="articleDetail">
         <b-row class="mb-4">
             <b-col>
                 <b-button to="/soup">Back</b-button>
@@ -7,31 +7,29 @@
         </b-row>
         <b-row class="mb-3">
             <b-col>
-                <b>{{articledetail.name}}</b>
+                <b>{{articleDetail.name}}</b>
             </b-col>
         </b-row>
         <b-row class="mb-3" align-h="center">
             <b-col cols="4">
-                <b-form-tags placeholder="Tags" v-model="selected_tags" @input="articleUpdate(articledetail)" @tag-state="onTagState"></b-form-tags>
+                <b-form-tags placeholder="Tags" :value="selectedTags" @input="articleUpdate($event, articleDetail, 'tags')" @tag-state="onTagState"></b-form-tags>
             </b-col>
         </b-row>
-        <MarkdownEditor v-bind:markdown="articledetail.content">
-            <b-textarea v-model="articledetail.content" @input="articleUpdate(articledetail)" rows="20"/>
+        <MarkdownEditor v-bind:markdown="articleDetail.content">
+            <b-textarea :value="articleDetail.content" @input="articleUpdate($event, articleDetail, 'content')" rows="20"/>
         </MarkdownEditor>
         <b-row class="mt-3">
             <b-col>
-                <button class="btn-sm btn-danger m-2" v-on:click="articleDelete(articledetail)">Delete</button>
+                <button class="btn-sm btn-danger m-2" v-on:click="articleDelete(articleDetail)">Delete</button>
             </b-col>
         </b-row>
     </div>
 </template>
 
 <script>
-
-import axios from 'axios';
+import Vuex from 'vuex'
 import slugify from 'slugify';
 
-import {API_HOST, AxiosConfig} from '../storage/service'
 import MarkdownEditor from '@/components/MarkdownEditor';
 
 export default {
@@ -41,48 +39,48 @@ export default {
     },
     data() {
         return {
-            articledetail: {},
-            selected_tags: [],
             valid_tags: [],
             invalid_tags: [],
             duplicate_tags: []
         }
     },
-    methods: {
-        getArticle() {
-            axios.get(`http://${API_HOST}/api/soup/articles/${this.$route.params.slug}/`, AxiosConfig)
-            .then(res => {
-                this.articledetail = res.data;
-                this.selected_tags = this.articledetail.tags.map(tag => tag.name);
-            })
-            .catch(err => console.log(err));
+    computed: {
+        ...Vuex.mapGetters('soup', [
+            'getArticleBySlug'
+        ]),
+        articleDetail() {
+            return this.getArticleBySlug(this.$route.params.slug);
         },
-        articleDelete(articledetail) {
+        selectedTags() {
+            return this.articleDetail.tags.map(tag => tag.name);
+        }
+    },
+    methods: {
+        ...Vuex.mapActions('soup', [
+            'deleteArticle',
+            'updateArticle'
+        ]),
+        articleDelete(article) {
             var is_ok = confirm("Delete Article ?");
             if (is_ok) {
-                axios.delete(`http://${API_HOST}/api/soup/articles/${articledetail.slug}/`, AxiosConfig)
-                .then(this.$router.push('/soup'))
-                .catch(err => console.log(err));
+                this.deleteArticle(article).then(() => {
+                   this.$router.push('/soup');
+                });
             };
         },
-        articleUpdate(articledetail) {
-            axios.put(`http://${API_HOST}/api/soup/articles/${articledetail.slug}/`, {
-                name: articledetail.name,
-                slug: articledetail.slug,
-                content: articledetail.content,
-                tags: this.selected_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})})),
-            }, AxiosConfig)
-            .then()
-            .catch(err => console.log(err))
+        articleUpdate(event, article, field) {
+            let data = {};
+            if (field === 'tags')
+                data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}));
+            else
+                data[field] = event;
+            this.updateArticle({article, data});
         },
         onTagState(valid, invalid, duplicate) {
             this.valid_tags = valid;
             this.invalid_tags = invalid;
             this.duplicate_tags = duplicate;
         }
-    },
-    mounted() {
-        this.getArticle();
     }
 }
 </script>
