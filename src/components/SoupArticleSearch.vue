@@ -63,6 +63,7 @@
 
 <script>
 import Vuex from 'vuex'
+import _ from 'lodash'
 
 export default {
     name: 'SoupArticleSearch',
@@ -113,7 +114,7 @@ export default {
             addTag(option.split(' (')[0]);
             this.search_by_tags = '';
         },
-        onInput(event, field) {
+        onInput: _.debounce(function(event, field) {
             let search = {
                 search_text: this.search_text, 
                 search_tags: this.search_tags
@@ -121,7 +122,7 @@ export default {
             search[field] = event;
             this.updateSearchParams(search);
             this.$emit('updated-search');
-        }
+        }, 300)
     },
     created() {
         this.loadTags().then(() => this.getOptions());
