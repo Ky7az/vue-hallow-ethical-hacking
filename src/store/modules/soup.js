@@ -80,14 +80,15 @@ const mutations = {
         state.search_params = params.join('&');
     },
     CREATE_ARTICLE(state, article) {
-        state.articles.push(article);
+        state.articles.unshift(article);
     },
     DELETE_ARTICLE(state, article) {
         state.articles = state.articles.filter(a => a.slug !== article.slug);
     },
     UPDATE_ARTICLE(state, article) {
-        const item = state.articles.find(a => a.slug === article.slug);
-        Object.assign(item, article);
+        const index = state.articles.findIndex(a => a.slug === article.slug);
+        state.articles.splice(index, 1);
+        state.articles.unshift(article);
     }
 }
 
