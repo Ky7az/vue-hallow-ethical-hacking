@@ -28,6 +28,7 @@
 
 <script>
 import Vuex from 'vuex'
+import _ from 'lodash'
 import slugify from 'slugify';
 
 import MarkdownEditor from '@/components/MarkdownEditor';
@@ -68,14 +69,14 @@ export default {
                 });
             };
         },
-        articleUpdate(event, article, field) {
+        articleUpdate: _.debounce(function(event, article, field) {
             let data = {};
             if (field === 'tags')
                 data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}));
             else
                 data[field] = event;
             this.updateArticle({article, data});
-        },
+        }, 1000),
         onTagState(valid, invalid, duplicate) {
             this.valid_tags = valid;
             this.invalid_tags = invalid;
