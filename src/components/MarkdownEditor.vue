@@ -16,9 +16,9 @@
 
 <script>
 import marked from 'marked';
-import highlight from 'highlight.js';
+import hljs from 'highlight.js';
 
-import 'highlight.js/styles/solarized-dark.css';
+import 'highlight.js/styles/stackoverflow-dark.css';
 
 export default {
     name: 'MarkdownEditor',
@@ -35,7 +35,7 @@ export default {
             if (this.markdown) {
                 return marked(this.markdown, {
                     highlight(md) {
-                        return highlight.highlightAuto(md).value
+                        return hljs.highlightAuto(md).value
                     }
                 });
             }
@@ -44,8 +44,15 @@ export default {
     methods: {
         togglePreview() {
             this.preview = !this.preview;
-            this.$emit('previewed-markdown', this.preview);
-        },
+        }
+    },
+    mounted() {
+        hljs.highlightAll();
+    },
+    updated() {
+        this.$nextTick(function() {
+            hljs.highlightAll();
+        })
     }
 }
 </script>
