@@ -16,7 +16,7 @@
             </b-col>
         </b-row>
         <MarkdownEditor v-bind:markdown="articleDetail.content">
-            <b-textarea :value="articleDetail.content" @input="articleUpdate($event, articleDetail, 'content')" rows="20"/>
+            <b-textarea :value="articleDetail.content" @change="articleUpdate($event, articleDetail, 'content')" rows="20"/>
         </MarkdownEditor>
         <b-row class="mt-3">
             <b-col>
@@ -69,14 +69,14 @@ export default {
                 });
             };
         },
-        articleUpdate: _.debounce(function(event, article, field) {
+        articleUpdate(event, article, field) {
             let data = {};
             if (field === 'tags')
                 data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}));
             else
                 data[field] = event;
             this.updateArticle({article, data});
-        }, 1000),
+        },
         onTagState(valid, invalid, duplicate) {
             this.valid_tags = valid;
             this.invalid_tags = invalid;
