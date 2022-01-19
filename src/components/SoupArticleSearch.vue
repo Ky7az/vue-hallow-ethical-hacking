@@ -6,7 +6,7 @@
                     <b-input-group-prepend is-text>
                         <b-icon icon="search" class="orange"></b-icon>
                     </b-input-group-prepend>
-                    <b-form-input type="search" size="sm" :value="search_text" @input="onInput($event, 'search_text')"></b-form-input>
+                    <b-form-input type="search" size="sm" :value="search_text" @input="onInputSearch($event, 'search_text')"></b-form-input>
                 </b-input-group>
             </b-col>
             <b-col>
@@ -14,7 +14,7 @@
         </b-row> 
         <b-row>
             <b-col class="mb-3">
-                <b-form-tags size="sm" :value="search_tags" @input="onInput($event, 'search_tags')" no-outer-focus>
+                <b-form-tags size="sm" :value="search_tags" @input="onInputSearch($event, 'search_tags')" no-outer-focus>
                     <template v-slot="{ tags, disabled, addTag, removeTag }">
                         <ul v-if="tags.length > 0" class="list-inline d-inline-block">
                             <li v-for="tag in tags" :key="tag" class="list-inline-item">
@@ -47,7 +47,7 @@
                             <b-dropdown-item-button
                                 v-for="option in availableOptions"
                                 :key="option"
-                                @click="onOptionClick({ option, addTag })">
+                                @click="onClickOption({ option, addTag })">
                                 {{ option }}
                             </b-dropdown-item-button>
                             <b-dropdown-text v-if="availableOptions.length === 0">
@@ -110,11 +110,11 @@ export default {
             this.options = this.tags.map(tag => tag.name + ' (' + tag.article_count.toString() + ')');
             this.options.sort();
         },
-        onOptionClick({ option, addTag }) {
+        onClickOption({ option, addTag }) {
             addTag(option.split(' (')[0]);
             this.search_by_tags = '';
         },
-        onInput: _.debounce(function(event, field) {
+        onInputSearch: _.debounce(function(event, field) {
             let search = {
                 search_text: this.search_text, 
                 search_tags: this.search_tags

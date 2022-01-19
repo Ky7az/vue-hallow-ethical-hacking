@@ -3,7 +3,7 @@
         <b-col cols="4">
             <b-button-toolbar class="mb-3">
                 <b-button-group class="mx-auto">
-                    <b-button title="Preview" variant="outline-secondary" @click="togglePreview()">
+                    <b-button title="Preview" variant="outline-secondary" @click="onClickTogglePreview">
                         <b-icon icon="eye" size="sm"></b-icon>
                     </b-button>
                 </b-button-group>
@@ -42,7 +42,7 @@ export default {
         }
     },
     methods: {
-        togglePreview() {
+        onClickTogglePreview() {
             this.preview = !this.preview;
         }
     },

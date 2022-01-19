@@ -1,12 +1,12 @@
 <template>
     <div>
         <b-button size="sm" @click="$bvModal.show('modal-login')" v-if="token == null">Sign In</b-button>
-        <b-button size="sm" @click="logout" v-if="token != null">Sign Out</b-button>
+        <b-button size="sm" @click="onClickLogout" v-if="token != null">Sign Out</b-button>
 
         <b-modal id="modal-login" hide-footer>
             <div class="d-block text-center">
-                <b-form v-on:submit.prevent="login" v-if="token == null">
-                    <b-form-group label="Username"  label-for="username">
+                <b-form @submit.prevent="onSubmitLogin" v-if="token == null">
+                    <b-form-group label="Username" label-for="username">
                         <b-form-input id="username" v-model="username" required></b-form-input>
                     </b-form-group>
                     <b-form-group label="Password" label-for="password">
@@ -14,7 +14,7 @@
                     </b-form-group>
                     <b-button type="submit" variant="primary">Sign in</b-button>
                 </b-form>
-                <b-button type="submit" v-on:click="logout" v-if="token != null">Sign Out</b-button>
+                <b-button type="submit" @click="onClickLogout" v-if="token != null">Sign Out</b-button>
                 <br/><br/>
                 <b-alert
                     variant="danger"
@@ -47,7 +47,7 @@ export default {
         }
     },
     methods: {
-        login() {
+        onSubmitLogin() {
             axios.post(`http://${API_HOST}/auth/`, {
                 username: this.username,
                 password: this.password
@@ -65,7 +65,7 @@ export default {
                 this.dismiss_countdown = this.dismiss_secs;
             });
         },
-        logout() {
+        onClickLogout() {
             localStorage.removeItem('user-token');
             this.token = null;
             this.resetForm();

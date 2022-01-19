@@ -12,15 +12,15 @@
         </b-row>
         <b-row class="mb-3" align-h="center">
             <b-col cols="4">
-                <b-form-tags placeholder="Tags" :value="selectedTags" @input="articleUpdate($event, articleDetail, 'tags')" @tag-state="onTagState"></b-form-tags>
+                <b-form-tags placeholder="Tags" :value="selectedTags" @input="onInputArticleUpdate($event, articleDetail, 'tags')" @tag-state="onTagState"></b-form-tags>
             </b-col>
         </b-row>
         <MarkdownEditor v-bind:markdown="articleDetail.content">
-            <b-textarea :value="articleDetail.content" @change="articleUpdate($event, articleDetail, 'content')" rows="20"/>
+            <b-textarea :value="articleDetail.content" @change="onInputArticleUpdate($event, articleDetail, 'content')" rows="20"/>
         </MarkdownEditor>
         <b-row class="mt-3">
             <b-col>
-                <button class="btn-sm btn-danger m-2" v-on:click="articleDelete(articleDetail)">Delete</button>
+                <b-button variant="danger" size="sm" class="m-2" @click="onClickArticleDelete(articleDetail)">Delete</b-button>
             </b-col>
         </b-row>
     </div>
@@ -61,7 +61,7 @@ export default {
             'deleteArticle',
             'updateArticle'
         ]),
-        articleDelete(article) {
+        onClickArticleDelete(article) {
             var is_ok = confirm("Delete Article ?");
             if (is_ok) {
                 this.deleteArticle(article).then(() => {
@@ -69,7 +69,7 @@ export default {
                 });
             };
         },
-        articleUpdate(event, article, field) {
+        onInputArticleUpdate(event, article, field) {
             let data = {};
             if (field === 'tags')
                 data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}));

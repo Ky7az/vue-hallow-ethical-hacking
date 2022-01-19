@@ -18,47 +18,29 @@ const getters = {
 
 const actions = {
     async loadArticles({ commit }) {
-        try {
-            const res = await axios.get(`http://${API_HOST}/api/soup/articles/?${state.search_params}`, AxiosConfig);
-            return commit('SET_ARTICLES', res.data);
-        } catch (err) {
-            return console.log(err);
-        }
+        const res = await axios.get(`http://${API_HOST}/api/soup/articles/?${state.search_params}`, AxiosConfig);
+        commit('SET_ARTICLES', res.data);
     },
     async loadTags({ commit }) {
-        try {
-            const res = await axios.get(`http://${API_HOST}/api/soup/tags/`, AxiosConfig);
-            return commit('SET_TAGS', res.data);
-        } catch (err) {
-            return console.log(err);
-        }
+        const res = await axios.get(`http://${API_HOST}/api/soup/tags/`, AxiosConfig);
+        commit('SET_TAGS', res.data);
     },
     updateSearchParams({ commit }, search) {
         commit('SET_SEARCH_PARAMS', search);
     },
     async createArticle({ commit }, data) {
-        try {
-            const res = await axios.post(`http://${API_HOST}/api/soup/articles/`, data, AxiosConfig)
-            return commit('CREATE_ARTICLE', res.data);
-        } catch (err) {
-            return console.log(err);
-        }
+        const res = await axios.post(`http://${API_HOST}/api/soup/articles/`, data, AxiosConfig)
+        commit('CREATE_ARTICLE', res.data);
+        return res.data;
     },
     async deleteArticle({ commit }, article) {
-        try {
-            await axios.delete(`http://${API_HOST}/api/soup/articles/${article.slug}/`, AxiosConfig);
-            return commit('DELETE_ARTICLE', article);
-        } catch (err) {
-            return console.log(err);
-        }
+        await axios.delete(`http://${API_HOST}/api/soup/articles/${article.slug}/`, AxiosConfig);
+        commit('DELETE_ARTICLE', article);
     },
     async updateArticle({ commit }, {article, data}) {
-        try {
-            const res = await axios.patch(`http://${API_HOST}/api/soup/articles/${article.slug}/`, data, AxiosConfig);
-            return commit('UPDATE_ARTICLE', res.data);
-        } catch (err) {
-            return console.log(err);
-        }
+        const res = await axios.patch(`http://${API_HOST}/api/soup/articles/${article.slug}/`, data, AxiosConfig);
+        commit('UPDATE_ARTICLE', res.data);
+        return res.data;
     }
 }
 

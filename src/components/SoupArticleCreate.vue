@@ -7,7 +7,7 @@
         </b-row>
         <b-row>
             <b-col>
-                <form id="form-article" v-on:submit.prevent="submitForm">
+                <form id="form-article" @submit.prevent="submitForm">
                     <b-row class="mb-3" align-h="center">
                         <b-col cols="4">
                             <b-form-input id="name" type="text" placeholder="Name" v-model="name"></b-form-input>
@@ -65,8 +65,8 @@ export default {
                 content: this.content,
                 tags: this.selected_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}))
             }
-            this.createArticle(data).then(() => {
-                this.$router.push(`/soup/art/${slug}`);
+            this.createArticle(data).then((res) => {
+                this.$router.push(`/soup/art/${res.slug}`);
             });
         },
         onTagState(valid, invalid, duplicate) {

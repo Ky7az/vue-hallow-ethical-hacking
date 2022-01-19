@@ -5,7 +5,7 @@
                 <b-button to="/soup/new">New</b-button>
             </b-col>
         </b-row>
-        <SoupArticleSearch v-on:updated-search="onUpdatedSearch"/>
+        <SoupArticleSearch @updated-search="onUpdatedSearch"/>
         <b-row cols="1" cols-sm="2" cols-md="3" cols-lg="4" cols-xl="6">
             <b-col v-for="article in articles"
                    v-bind:key="article.id"
