@@ -72,7 +72,7 @@ export default {
         onInputArticleUpdate(event, article, field) {
             let data = {};
             if (field === 'tags')
-                data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}));
+                data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '-', 'lower': true})}));
             else
                 data[field] = event;
             this.updateArticle({article, data});

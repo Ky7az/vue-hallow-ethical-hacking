@@ -57,7 +57,7 @@ const mutations = {
             params.push('name_or_content=' + search.search_text);
         state.search_text = search.search_text;
         if (search.search_tags.length)
-            search.search_tags.forEach(tag => params.push('tags=' + slugify(tag, {'replacement': '_', 'lower': true})));
+            search.search_tags.forEach(tag => params.push('tags=' + slugify(tag, {'replacement': '-', 'lower': true})));
         state.search_tags = search.search_tags;
         state.search_params = params.join('&');
     },

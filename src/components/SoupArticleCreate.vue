@@ -58,12 +58,12 @@ export default {
             'createArticle'
         ]),
         submitForm() {
-            let slug = slugify(this.name, {'replacement': '_', 'lower': true});
+            let slug = slugify(this.name, {'replacement': '-', 'lower': true});
             let data = {
                 name: this.name,
                 slug: slug,
                 content: this.content,
-                tags: this.selected_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '_', 'lower': true})}))
+                tags: this.selected_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '-', 'lower': true})}))
             }
             this.createArticle(data).then((res) => {
                 this.$router.push(`/soup/art/${res.slug}`);
