@@ -10,7 +10,7 @@
                 <form id="form-article" @submit.prevent="submitForm">
                     <b-row class="mb-3" align-h="center">
                         <b-col cols="4">
-                            <b-form-input id="name" type="text" placeholder="Name" v-model="name"></b-form-input>
+                            <b-form-input id="name" type="text" placeholder="Name" v-model="name" autofocus></b-form-input>
                         </b-col>
                     </b-row>
                     <b-row class="mb-3" align-h="center">

@@ -7,7 +7,7 @@
             <div class="d-block text-center">
                 <b-form @submit.prevent="onSubmitLogin" v-if="token == null">
                     <b-form-group label="Username" label-for="username">
-                        <b-form-input id="username" v-model="username" required></b-form-input>
+                        <b-form-input id="username" v-model="username" required autofocus></b-form-input>
                     </b-form-group>
                     <b-form-group label="Password" label-for="password">
                         <b-form-input id="password" v-model="password" type="password" required></b-form-input>
