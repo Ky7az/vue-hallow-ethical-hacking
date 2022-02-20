@@ -1,6 +1,6 @@
 <template>
     <b-row align-h="center">
-        <b-col cols="4">
+        <b-col cols="6">
             <b-button-toolbar class="mb-3">
                 <b-button-group class="mx-auto">
                     <b-button title="Preview" variant="outline-secondary" @click="onClickTogglePreview">

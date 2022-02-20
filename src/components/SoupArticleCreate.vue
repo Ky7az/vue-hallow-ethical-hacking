@@ -19,7 +19,7 @@
                         </b-col>
                     </b-row>
                     <MarkdownEditor v-bind:markdown="content">
-                        <b-textarea id="content" name="content" v-model="content" rows="20" class="text-center"/>
+                        <b-textarea id="content" name="content" v-model="content" rows="20"/>
                     </MarkdownEditor>
                     <b-row class="mt-3">
                         <b-col>
