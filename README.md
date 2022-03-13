@@ -1,6 +1,6 @@
-# vue_hallow
+# VueHallowEthicalHacking
 Soup (Knowledge Base)  
-Pentest (Penetration Testing Lab)  
+Pentest (Penetration Testing Helper)  
 
 *Based on VueJS 2*  
-*Frontend of [DjangoHallow](https://github.com/Ky7az/DjangoHallow)*
+*Frontend of [django-hallow-ethical-hacking](https://github.com/Ky7az/django-hallow-ethical-hacking)*
