@@ -27,6 +27,10 @@ export default {
     color: #000000;
 }
 
+.orange {
+    color: #f55151;
+}
+
 #nav {
     padding: 30px;
 }

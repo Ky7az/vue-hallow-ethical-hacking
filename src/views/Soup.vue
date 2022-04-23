@@ -21,9 +21,3 @@ export default {
     }
 }
 </script>
-
-<style>
-.orange {
-    color: #f55151;
-}
-</style>
