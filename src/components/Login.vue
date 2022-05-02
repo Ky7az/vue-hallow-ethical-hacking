@@ -32,6 +32,7 @@
 
 <script>
 import axios from 'axios';
+
 import {API_HOST} from '../storage/service'
 
 export default {

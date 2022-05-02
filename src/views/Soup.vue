@@ -9,6 +9,8 @@
 <script>
 import Vuex from 'vuex'
 
+import {TokenService} from '../storage/service'
+
 export default {
     name: 'Soup',
     methods: {
@@ -17,7 +19,9 @@ export default {
         ])
     },
     created() {
-        this.loadArticles();
+        if (TokenService.getToken()) {
+            this.loadArticles();
+        }
     }
 }
 </script>

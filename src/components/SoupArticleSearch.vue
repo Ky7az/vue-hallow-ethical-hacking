@@ -65,6 +65,8 @@
 import Vuex from 'vuex'
 import _ from 'lodash'
 
+import {TokenService} from '../storage/service'
+
 export default {
     name: 'SoupArticleSearch',
     data() {
@@ -125,7 +127,9 @@ export default {
         }, 300)
     },
     created() {
-        this.loadTags().then(() => this.getOptions());
+        if (TokenService.getToken()) {
+            this.loadTags().then(() => this.getOptions());
+        }
     }
 }
 </script>
