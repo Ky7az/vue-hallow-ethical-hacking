@@ -26,7 +26,6 @@
                             {{ tag }}</b-form-tag>
                             </li>
                         </ul>
-
                         <b-dropdown size="sm" variant="outline-secondary" block menu-class="w-100">
                             <template #button-content>
                                 <b-icon icon="tag-fill" class="orange"></b-icon>
@@ -57,6 +56,8 @@
                     </template>
                 </b-form-tags>
             </b-col>
+            <b-col>
+            </b-col>
         </b-row>
     </div>
 </template>
@@ -65,7 +66,7 @@
 import Vuex from 'vuex'
 import _ from 'lodash'
 
-import {TokenService} from '../storage/service'
+import { TokenService } from '../storage/service'
 
 export default {
     name: 'SoupArticleSearch',

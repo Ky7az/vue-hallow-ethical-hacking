@@ -11,19 +11,19 @@
                    v-bind:key="article.id"
                    v-bind:title="article.name"
                    class="mb-4">
-                <b-card v-bind:header="article.name" 
-                        bg-variant="dark" 
+                <b-card v-bind:header="article.name"
+                        bg-variant="dark"
                         text-variant="white">
                     <b-card-text>
-                        <small v-for="tag in article.tags" 
-                                v-bind:key="tag.id" 
+                        <small v-for="tag in article.tags"
+                                v-bind:key="tag.id"
                                 v-bind:title="tag.name">
                             #{{tag.name}}
                         </small>
                         <router-link :to="`/soup/art/${article.slug}`">
                             <b-icon icon="arrow-up-right-circle" class="orange"></b-icon>
                         </router-link>
-                        </b-card-text>
+                    </b-card-text>
                     <template #footer>
                         <small class="text-muted">Updated <timeago :datetime="article.write_date" :auto-update="60"></timeago></small>
                     </template>

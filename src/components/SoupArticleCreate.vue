@@ -46,11 +46,11 @@ export default {
     data() {
         return {
             name: null,
-            content: "",
             selected_tags: [],
             valid_tags: [],
             invalid_tags: [],
-            duplicate_tags: []
+            duplicate_tags: [],
+            content: ""
         }
     },
     methods: {

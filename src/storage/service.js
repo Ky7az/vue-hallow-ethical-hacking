@@ -14,5 +14,5 @@ const AxiosConfig = {
 
 export const API_HOST = '127.0.0.1'
 
-export {TokenService}
-export {AxiosConfig}
+export { TokenService }
+export { AxiosConfig }

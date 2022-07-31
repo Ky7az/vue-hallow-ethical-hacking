@@ -33,7 +33,7 @@
 <script>
 import axios from 'axios';
 
-import {API_HOST} from '../storage/service'
+import { API_HOST } from '../storage/service'
 
 export default {
     name: 'Login',

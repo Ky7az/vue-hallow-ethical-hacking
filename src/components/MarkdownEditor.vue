@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import marked from 'marked';
+import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/stackoverflow-dark.css';
 

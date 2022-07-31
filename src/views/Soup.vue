@@ -9,7 +9,7 @@
 <script>
 import Vuex from 'vuex'
 
-import {TokenService} from '../storage/service'
+import { TokenService } from '../storage/service'
 
 export default {
     name: 'Soup',
