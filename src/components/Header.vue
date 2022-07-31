@@ -6,6 +6,7 @@
             <b-navbar-nav>
                 <b-nav-item to="/soup">Soup</b-nav-item>
                 <b-nav-item to="/pentest">Pentest</b-nav-item>
+                <b-nav-item to="/writeup">Writeup</b-nav-item>
             </b-navbar-nav>
             <b-navbar-nav class="ml-auto">
                 <Login/>

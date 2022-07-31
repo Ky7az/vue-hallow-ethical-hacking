@@ -2,12 +2,16 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Soup from '@/views/Soup.vue'
 import Pentest from '@/views/Pentest.vue'
+import Writeup from '@/views/Writeup.vue'
 import SoupArticleList from '@/components/SoupArticleList.vue'
 import SoupArticleCreate from '@/components/SoupArticleCreate.vue'
 import SoupArticleOpen from '@/components/SoupArticleOpen.vue'
 import PentestTaskList from '@/components/PentestTaskList.vue'
 import PentestTaskCreate from '@/components/PentestTaskCreate.vue'
 import PentestTaskOpen from '@/components/PentestTaskOpen.vue'
+import WriteupReportList from '@/components/WriteupReportList.vue'
+import WriteupReportCreate from '@/components/WriteupReportCreate.vue'
+import WriteupReportOpen from '@/components/WriteupReportOpen.vue'
 
 Vue.use(VueRouter)
 
@@ -36,7 +40,7 @@ const routes = [
                 component: SoupArticleCreate,
                 meta: {
                     title: 'Soup - New Article'
-                },
+                }
             },
             { 
                 path: 'art/:slug', 
@@ -75,7 +79,35 @@ const routes = [
                 meta: {
                     title: 'Pentest - Open Task'
                 }
+            }
+        ]
+    },
+    {
+        path: '/writeup',
+        name: 'writeup',
+        component: Writeup,
+        children: [
+            { 
+                path: '', 
+                component: WriteupReportList,
+                meta: {
+                    title: 'Writeup - List Reports'
+                }
             },
+            { 
+                path: 'new', 
+                component: WriteupReportCreate,
+                meta: {
+                    title: 'Writeup - New Report'
+                }
+            },
+            { 
+                path: 'rpt/:slug', 
+                component: WriteupReportOpen,
+                meta: {
+                    title: 'Writeup - Open Report'
+                }
+            }
         ]
     },
     {
