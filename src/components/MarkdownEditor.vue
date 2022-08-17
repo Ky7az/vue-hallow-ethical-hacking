@@ -8,6 +8,7 @@
                     </b-button>
                 </b-button-group>
             </b-button-toolbar>
+            <div class="toc" v-html="tableOfContents" v-if="preview == true"></div>
             <div class="editor" v-html="processedMarkdown" v-if="preview == true"></div>
             <slot class="editor" v-if="preview == false"></slot>
         </b-col>
@@ -38,6 +39,24 @@ export default {
                     }
                 });
             }
+        },
+        tableOfContents() {
+            const stack = [document.createElement('ul')];
+            for (const heading of marked.lexer(this.markdown).filter(x => x.type === 'heading')) {
+                if (heading.depth < stack.length) {
+                    stack.length = heading.depth;
+                } else {
+                    while (heading.depth > stack.length) {
+                        const ul = document.createElement('ul');
+                        stack.at(-1).append(ul);
+                        stack.push(ul);
+                    }
+                }
+                const prefix = marked.getDefaults().headerPrefix || '';
+                const anchor = prefix + heading.text.toLowerCase().replaceAll(' ', '-').replace(/[^a-z0-9 -]/g, '');
+                stack.at(-1).insertAdjacentHTML('beforeend', `<li><a href="#${anchor}">${heading.text}</a></li>`);
+            }
+            return stack[0].outerHTML;
         }
     },
     methods: {
@@ -58,6 +77,10 @@ export default {
 
 <style scoped>
 
+.toc {
+    font-size: 13px;
+    text-align: left;
+}
 .editor {
     font-size: 13px;
     text-align: left;
