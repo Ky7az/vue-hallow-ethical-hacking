@@ -26,7 +26,7 @@
             </b-col>
         </b-row>
         <MarkdownEditor v-bind:markdown="reportDetail.content">
-            <b-textarea :value="reportDetail.content" @change="onInputReportUpdate($event, reportDetail, 'content')" rows="20"/>
+            <b-textarea :value="reportDetail.content" @change="onInputReportUpdate($event, reportDetail, 'content')" rows="50"/>
         </MarkdownEditor>
         <b-row class="mt-3">
             <b-col>
