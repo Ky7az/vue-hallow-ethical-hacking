@@ -31,6 +31,10 @@ export default {
     color: #f55151;
 }
 
+.orange:hover {
+    color: #f5b351;
+}
+
 #nav {
     padding: 30px;
 }
