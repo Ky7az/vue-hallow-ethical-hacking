@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
-import { enable as enableDarkMode } from 'darkreader'; 
+import { enable as enableDarkMode } from 'darkreader'
 import { TablePlugin } from 'bootstrap-vue'
 import VueHotkey from 'v-hotkey'
 import VueTimeago from 'vue-timeago'
