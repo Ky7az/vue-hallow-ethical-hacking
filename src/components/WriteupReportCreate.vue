@@ -35,7 +35,7 @@
                         </b-col>
                     </b-row>
                     <MarkdownEditor v-bind:markdown="content">
-                        <b-textarea id="content" name="content" v-model="content" rows="20"/>
+                        <b-textarea id="content" name="content" v-model="content" rows="20" autofocus/>
                     </MarkdownEditor>
                     <b-row class="mt-3">
                         <b-col>
