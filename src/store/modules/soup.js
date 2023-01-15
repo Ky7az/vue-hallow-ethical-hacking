@@ -7,9 +7,11 @@ import {API_HOST, AxiosConfig} from '../../storage/service'
 const state = {
     tags: [],
     articles: [],
+    article_count: 0,
+    selected_page: 1,
     search_text: null,
     search_tags: [],
-    search_params: []
+    search_params: null
 }
 
 const getters = {
@@ -23,9 +25,14 @@ const actions = {
         commit('SET_TAGS', res.data);
     },
     // Articles
-    async loadArticles({ commit }) {
-        const res = await axios.get(`http://${API_HOST}/api/soup/articles/?${state.search_params}`, AxiosConfig);
-        commit('SET_ARTICLES', res.data);
+    async loadArticles({ commit }, signal) {
+        AxiosConfig['signal'] = signal;
+        let req_params = `?page=${state.selected_page}`;
+        if (state.search_params)
+            req_params += `&${state.search_params}`;
+        const res = await axios.get(`http://${API_HOST}/api/soup/articles/${req_params}`, AxiosConfig);
+        commit('SET_ARTICLES', res.data.results);
+        commit('SET_ARTICLE_COUNT', res.data.count);
     },
     async createArticle({ commit }, data) {
         const res = await axios.post(`http://${API_HOST}/api/soup/articles/`, data, AxiosConfig)
@@ -40,6 +47,10 @@ const actions = {
     async deleteArticle({ commit }, article) {
         await axios.delete(`http://${API_HOST}/api/soup/articles/${article.slug}/`, AxiosConfig);
         commit('DELETE_ARTICLE', article);
+    },
+    // Selected Page
+    updateSelectedPage({ commit }, page) {
+        commit('SET_SELECTED_PAGE', page);
     },
     // Search Params
     updateSearchParams({ commit }, search) {
@@ -56,6 +67,9 @@ const mutations = {
     SET_ARTICLES(state, articles) {
         state.articles = articles;
     },
+    SET_ARTICLE_COUNT(state, count) {
+        state.article_count = count;
+    },
     CREATE_ARTICLE(state, article) {
         state.articles.unshift(article);
     },
@@ -66,6 +80,10 @@ const mutations = {
     },
     DELETE_ARTICLE(state, article) {
         state.articles = state.articles.filter(a => a.slug !== article.slug);
+    },
+    // Selected Page
+    SET_SELECTED_PAGE(state, page) {
+        state.selected_page = page || 1;
     },
     // Search Params
     SET_SEARCH_PARAMS(state, search) {

@@ -31,6 +31,17 @@
                 </b-card>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col class="mb-4">
+                <b-pagination
+                    :value="selected_page"
+                    :total-rows="report_count"
+                    :per-page="report_per_page"
+                    align="right"
+                    @change="selectPage"
+                ></b-pagination>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -44,17 +55,45 @@ export default {
     components: {
         WriteupReportSearch
     },
+    data() {
+        return {
+            report_per_page: 18,
+            abort_controller: null
+        }
+    },
     computed: {
         ...Vuex.mapState('writeup', [
-            'reports'
+            'reports',
+            'report_count',
+            'selected_page'
         ])
     },
     methods: {
         ...Vuex.mapActions('writeup', [
-            'loadReports'
+            'loadReports',
+            'updateSelectedPage'
         ]),
         onUpdatedSearch() {
+            this.abortSearch();
+            this.abort_controller = new AbortController();
+
+            this.updateSelectedPage(1);
+
+            this.loadReports(this.abort_controller.signal)
+            .then(() => {
+                this.abort_controller = null;
+            })
+            .catch(() => {
+            });
+        },
+        selectPage(pageNum) {
+            this.updateSelectedPage(pageNum);
             this.loadReports();
+        },
+        abortSearch() {
+            if (this.abort_controller) {
+                this.abort_controller.abort();
+            }
         }
     }
 }

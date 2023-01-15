@@ -8,12 +8,14 @@ const state = {
     tags: [],
     websites: [],
     reports: [],
+    report_count: 0,
+    selected_page: 1,
     search_text: null,
     search_tags: [],
     search_websites: [],
     search_task_types: [],
     search_task_platforms: [],
-    search_params: []
+    search_params: null
 }
 
 const getters = {
@@ -32,9 +34,14 @@ const actions = {
         commit('SET_WEBSITES', res.data);
     },
     // Reports
-    async loadReports({ commit }) {
-        const res = await axios.get(`http://${API_HOST}/api/writeup/reports/?${state.search_params}`, AxiosConfig);
-        commit('SET_REPORTS', res.data);
+    async loadReports({ commit }, signal) {
+        AxiosConfig['signal'] = signal;
+        let req_params = `?page=${state.selected_page}`;
+        if (state.search_params)
+            req_params += `&${state.search_params}`;
+        const res = await axios.get(`http://${API_HOST}/api/writeup/reports/${req_params}`, AxiosConfig);
+        commit('SET_REPORTS', res.data.results);
+        commit('SET_REPORT_COUNT', res.data.count);
     },
     async createReport({ commit }, data) {
         const res = await axios.post(`http://${API_HOST}/api/writeup/reports/`, data, AxiosConfig)
@@ -49,6 +56,10 @@ const actions = {
     async deleteReport({ commit }, report) {
         await axios.delete(`http://${API_HOST}/api/writeup/reports/${report.slug}/`, AxiosConfig);
         commit('DELETE_REPORT', report);
+    },
+    // Selected Page
+    updateSelectedPage({ commit }, page) {
+        commit('SET_SELECTED_PAGE', page);
     },
     // Search Params
     updateSearchParams({ commit }, search) {
@@ -69,6 +80,9 @@ const mutations = {
     SET_REPORTS(state, reports) {
         state.reports = reports;
     },
+    SET_REPORT_COUNT(state, count) {
+        state.report_count = count;
+    },
     CREATE_REPORT(state, report) {
         state.reports.unshift(report);
     },
@@ -79,6 +93,10 @@ const mutations = {
     },
     DELETE_REPORT(state, report) {
         state.reports = state.reports.filter(x => x.id !== report.id);
+    },
+    // Selected Page
+    SET_SELECTED_PAGE(state, page) {
+        state.selected_page = page || 1;
     },
     // Search Params
     SET_SEARCH_PARAMS(state, search) {

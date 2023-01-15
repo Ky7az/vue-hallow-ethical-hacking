@@ -30,6 +30,17 @@
                 </b-card>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col class="mb-4">
+                <b-pagination
+                    :value="selected_page"
+                    :total-rows="article_count"
+                    :per-page="article_per_page"
+                    align="right"
+                    @change="selectPage"
+                ></b-pagination>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -43,17 +54,45 @@ export default {
     components: {
         SoupArticleSearch
     },
+    data() {
+        return {
+            article_per_page: 18,
+            abort_controller: null
+        }
+    },
     computed: {
         ...Vuex.mapState('soup', [
-            'articles'
+            'articles',
+            'article_count',
+            'selected_page'
         ])
     },
     methods: {
         ...Vuex.mapActions('soup', [
-            'loadArticles'
+            'loadArticles',
+            'updateSelectedPage'
         ]),
         onUpdatedSearch() {
+            this.abortSearch();
+            this.abort_controller = new AbortController();
+
+            this.updateSelectedPage(1);
+
+            this.loadArticles(this.abort_controller.signal)
+            .then(() => {
+                this.abort_controller = null;
+            })
+            .catch(() => {
+            });
+        },
+        selectPage(pageNum) {
+            this.updateSelectedPage(pageNum);
             this.loadArticles();
+        },
+        abortSearch() {
+            if (this.abort_controller) {
+                this.abort_controller.abort();
+            }
         }
     }
 }
