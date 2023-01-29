@@ -25,12 +25,12 @@ const getters = {
 const actions = {
     // Tags
     async loadTags({ commit }) {
-        const res = await axios.get(`http://${API_HOST}/api/writeup/tags/`, AxiosConfig);
+        const res = await axios.get(`https://${API_HOST}/api/writeup/tags/`, AxiosConfig);
         commit('SET_TAGS', res.data);
     },
     // Websites
     async loadWebsites({ commit }) {
-        const res = await axios.get(`http://${API_HOST}/api/writeup/websites/`, AxiosConfig);
+        const res = await axios.get(`https://${API_HOST}/api/writeup/websites/`, AxiosConfig);
         commit('SET_WEBSITES', res.data);
     },
     // Reports
@@ -39,22 +39,22 @@ const actions = {
         let req_params = `?page=${state.selected_page}`;
         if (state.search_params)
             req_params += `&${state.search_params}`;
-        const res = await axios.get(`http://${API_HOST}/api/writeup/reports/${req_params}`, AxiosConfig);
+        const res = await axios.get(`https://${API_HOST}/api/writeup/reports/${req_params}`, AxiosConfig);
         commit('SET_REPORTS', res.data.results);
         commit('SET_REPORT_COUNT', res.data.count);
     },
     async createReport({ commit }, data) {
-        const res = await axios.post(`http://${API_HOST}/api/writeup/reports/`, data, AxiosConfig)
+        const res = await axios.post(`https://${API_HOST}/api/writeup/reports/`, data, AxiosConfig)
         commit('CREATE_REPORT', res.data);
         return res.data;
     },
     async updateReport({ commit }, {report, data}) {
-        const res = await axios.patch(`http://${API_HOST}/api/writeup/reports/${report.slug}/`, data, AxiosConfig);
+        const res = await axios.patch(`https://${API_HOST}/api/writeup/reports/${report.slug}/`, data, AxiosConfig);
         commit('UPDATE_REPORT', res.data);
         return res.data;
     },
     async deleteReport({ commit }, report) {
-        await axios.delete(`http://${API_HOST}/api/writeup/reports/${report.slug}/`, AxiosConfig);
+        await axios.delete(`https://${API_HOST}/api/writeup/reports/${report.slug}/`, AxiosConfig);
         commit('DELETE_REPORT', report);
     },
     // Selected Page

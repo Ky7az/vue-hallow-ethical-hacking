@@ -21,7 +21,7 @@ const getters = {
 const actions = {
     // Tags
     async loadTags({ commit }) {
-        const res = await axios.get(`http://${API_HOST}/api/soup/tags/`, AxiosConfig);
+        const res = await axios.get(`https://${API_HOST}/api/soup/tags/`, AxiosConfig);
         commit('SET_TAGS', res.data);
     },
     // Articles
@@ -30,22 +30,22 @@ const actions = {
         let req_params = `?page=${state.selected_page}`;
         if (state.search_params)
             req_params += `&${state.search_params}`;
-        const res = await axios.get(`http://${API_HOST}/api/soup/articles/${req_params}`, AxiosConfig);
+        const res = await axios.get(`https://${API_HOST}/api/soup/articles/${req_params}`, AxiosConfig);
         commit('SET_ARTICLES', res.data.results);
         commit('SET_ARTICLE_COUNT', res.data.count);
     },
     async createArticle({ commit }, data) {
-        const res = await axios.post(`http://${API_HOST}/api/soup/articles/`, data, AxiosConfig)
+        const res = await axios.post(`https://${API_HOST}/api/soup/articles/`, data, AxiosConfig)
         commit('CREATE_ARTICLE', res.data);
         return res.data;
     },
     async updateArticle({ commit }, {article, data}) {
-        const res = await axios.patch(`http://${API_HOST}/api/soup/articles/${article.slug}/`, data, AxiosConfig);
+        const res = await axios.patch(`https://${API_HOST}/api/soup/articles/${article.slug}/`, data, AxiosConfig);
         commit('UPDATE_ARTICLE', res.data);
         return res.data;
     },
     async deleteArticle({ commit }, article) {
-        await axios.delete(`http://${API_HOST}/api/soup/articles/${article.slug}/`, AxiosConfig);
+        await axios.delete(`https://${API_HOST}/api/soup/articles/${article.slug}/`, AxiosConfig);
         commit('DELETE_ARTICLE', article);
     },
     // Selected Page

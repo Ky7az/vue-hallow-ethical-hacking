@@ -49,7 +49,7 @@ export default {
     },
     methods: {
         onSubmitLogin() {
-            axios.post(`http://${API_HOST}/auth/`, {
+            axios.post(`https://${API_HOST}/auth/`, {
                 username: this.username,
                 password: this.password
             })
