@@ -5,6 +5,7 @@
         <b-collapse id="nav-collapse" is-nav>
             <b-navbar-nav>
                 <b-nav-item to="/soup">Soup</b-nav-item>
+                <b-nav-item to="/watch">Watch</b-nav-item>
                 <b-nav-item to="/pentest">Pentest</b-nav-item>
                 <b-nav-item to="/writeup">Writeup</b-nav-item>
             </b-navbar-nav>

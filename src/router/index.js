@@ -1,11 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Soup from '@/views/Soup.vue'
+import Watch from '@/views/Watch.vue'
 import Pentest from '@/views/Pentest.vue'
 import Writeup from '@/views/Writeup.vue'
 import SoupArticleList from '@/components/SoupArticleList.vue'
 import SoupArticleCreate from '@/components/SoupArticleCreate.vue'
 import SoupArticleOpen from '@/components/SoupArticleOpen.vue'
+import WatchContentList from '@/components/WatchContentList.vue'
+import WatchFeedCreate from '@/components/WatchFeedCreate.vue'
 import PentestTaskList from '@/components/PentestTaskList.vue'
 import PentestTaskCreate from '@/components/PentestTaskCreate.vue'
 import PentestTaskOpen from '@/components/PentestTaskOpen.vue'
@@ -47,6 +50,27 @@ const routes = [
                 component: SoupArticleOpen,
                 meta: {
                     title: 'Soup - Open Article'
+                }
+            }
+        ]
+    },
+    {
+        path: '/watch',
+        name: 'watch',
+        component: Watch,
+        children: [
+            { 
+                path: '', 
+                component: WatchContentList,
+                meta: {
+                    title: 'Watch - List Contents'
+                }
+            },
+            { 
+                path: 'new', 
+                component: WatchFeedCreate,
+                meta: {
+                    title: 'Watch - Create Feed'
                 }
             }
         ]
