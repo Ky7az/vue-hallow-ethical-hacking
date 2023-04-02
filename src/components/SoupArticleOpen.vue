@@ -15,7 +15,7 @@
                 <b-form-tags placeholder="Tags" :value="selectedTags" @input="onInputArticleUpdate($event, articleDetail, 'tags')" @tag-state="onTagState"></b-form-tags>
             </b-col>
         </b-row>
-        <MarkdownEditor v-bind:markdown="articleDetail.content">
+        <MarkdownEditor :markdown="articleDetail.content">
             <b-textarea :value="articleDetail.content" @change="onInputArticleUpdate($event, articleDetail, 'content')" rows="50" autofocus/>
         </MarkdownEditor>
         <b-row class="mt-3">

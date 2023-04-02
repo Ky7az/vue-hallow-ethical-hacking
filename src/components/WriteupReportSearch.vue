@@ -12,6 +12,7 @@
             </b-col>
             <b-col>
                 <b-form-checkbox-group
+                    size="sm"
                     :value="search_websites"
                     @input="onInputSearch($event, 'search_websites')"
                     :options="optionsWebsites"
@@ -20,6 +21,7 @@
                     text-field="text">
                 </b-form-checkbox-group>
                 <b-form-checkbox-group
+                    size="sm"
                     :value="search_task_types"
                     @input="onInputSearch($event, 'search_task_types')"
                     :options="optionsTaskTypes"
@@ -28,6 +30,7 @@
                     text-field="text">
                 </b-form-checkbox-group>
                 <b-form-checkbox-group
+                    size="sm"
                     :value="search_task_platforms"
                     @input="onInputSearch($event, 'search_task_platforms')"
                     :options="optionsTaskPlatforms"

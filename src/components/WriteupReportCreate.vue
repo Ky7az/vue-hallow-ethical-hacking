@@ -34,7 +34,7 @@
                             <b-form-tags placeholder="Tags" v-model="selected_tags" @tag-state="onTagState"></b-form-tags>
                         </b-col>
                     </b-row>
-                    <MarkdownEditor v-bind:markdown="content">
+                    <MarkdownEditor :markdown="content">
                         <b-textarea id="content" name="content" v-model="content" rows="20" autofocus/>
                     </MarkdownEditor>
                     <b-row class="mt-3">

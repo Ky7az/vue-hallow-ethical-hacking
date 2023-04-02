@@ -8,17 +8,17 @@
         <WriteupReportSearch @updated-search="onUpdatedSearch"/>
         <b-row cols="1" cols-sm="2" cols-md="3" cols-lg="4" cols-xl="6">
             <b-col v-for="report in reports"
-                   v-bind:key="report.id"
-                   v-bind:title="report.name"
+                   :key="report.id"
+                   :title="report.name"
                    class="mb-4">
-                <b-card v-bind:header="report.name"
-                        v-bind:sub-title="report.website.name + ' - ' + report.task_type_display"
+                <b-card :header="report.name"
+                        :sub-title="report.website.name + ' - ' + report.task_type_display"
                         bg-variant="dark"
                         text-variant="white" >
                     <b-card-text>
                         <small v-for="tag in report.tags"
-                                v-bind:key="tag.id"
-                                v-bind:title="tag.name">
+                                :key="tag.id"
+                                :title="tag.name">
                             #{{tag.name}}
                         </small>
                         <router-link :to="`/writeup/rpt/${report.slug}`">

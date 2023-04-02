@@ -17,7 +17,7 @@
         </b-row>
         <b-row class="mb-3" align-h="center">
             <b-col cols="2">
-                <b-link v-bind:href="reportDetail.task_url" target="new">Link</b-link>
+                <b-link :href="reportDetail.task_url" target="new">Link</b-link>
             </b-col>
         </b-row>
         <b-row class="mb-3" align-h="center">
@@ -25,7 +25,7 @@
                 <b-form-tags placeholder="Tags" :value="selectedTags" @input="onInputReportUpdate($event, reportDetail, 'tags')" @tag-state="onTagState"></b-form-tags>
             </b-col>
         </b-row>
-        <MarkdownEditor v-bind:markdown="reportDetail.content">
+        <MarkdownEditor :markdown="reportDetail.content">
             <b-textarea :value="reportDetail.content" @change="onInputReportUpdate($event, reportDetail, 'content')" rows="50" autofocus/>
         </MarkdownEditor>
         <b-row class="mt-3">
