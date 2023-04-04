@@ -28,7 +28,7 @@
                             <b-td>{{ contentDetail.tag && contentDetail.tag.name }}</b-td>
                             <b-td><timeago :datetime="contentDetail.create_date" :auto-update="60"></timeago></b-td>
                             <b-td>
-                                <a :href="`${contentDetail.url}`" @click="onClickContentView(contentDetail)" target="_blank">
+                                <a :href="`${contentDetail.url}`" @click.left="onClickContentView(contentDetail)" @click.middle="onClickContentView(contentDetail)" target="_blank">
                                     <b-icon icon="arrow-up-right-circle" title="View" class="orange"></b-icon>
                                 </a>
                             </b-td>
