@@ -7,7 +7,7 @@
         </b-row>
         <WatchContentSearch @updated-search="onUpdatedSearch"/>
         <b-row>
-            <b-col class="m-4">
+            <b-col>
                 <b-table-simple v-if="contents.length">
                     <b-thead>
                         <b-tr>
@@ -42,7 +42,7 @@
             </b-col>
         </b-row>
         <b-row>
-            <b-col class="mb-4">
+            <b-col>
                 <b-pagination
                     :value="selected_page"
                     :total-rows="content_count"

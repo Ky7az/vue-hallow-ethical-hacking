@@ -1,8 +1,8 @@
 <template>
     <div>
-        <b-row>
+        <b-row class="mb-2">
             <b-col>
-                <b-input-group size="sm" class="mb-2">
+                <b-input-group size="sm">
                     <b-input-group-prepend is-text>
                         <b-icon icon="search" class="orange"></b-icon>
                     </b-input-group-prepend>
@@ -13,8 +13,8 @@
                 <b-form-radio-group size="sm" :value="search_source_type" @input="onInputSearch($event, 'search_source_type')" :options="optionsSourceTypes"></b-form-radio-group>
             </b-col>
         </b-row> 
-        <b-row>
-            <b-col class="mb-3">
+        <b-row class="mb-4">
+            <b-col>
                 <TagSearch :tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
             </b-col>
             <b-col>

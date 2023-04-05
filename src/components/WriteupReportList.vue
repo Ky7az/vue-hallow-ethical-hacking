@@ -1,7 +1,7 @@
 <template>
     <div>
-        <b-row>
-            <b-col class="mb-4">
+        <b-row class="mb-4">
+            <b-col>
                 <b-button to="/writeup/new">New</b-button>
             </b-col>
         </b-row>
@@ -32,7 +32,7 @@
             </b-col>
         </b-row>
         <b-row>
-            <b-col class="mb-4">
+            <b-col>
                 <b-pagination
                     :value="selected_page"
                     :total-rows="report_count"

@@ -1,14 +1,13 @@
 <template>
     <div>
-        <b-row>
-            <b-col class="mb-3">
-                <b-input-group size="sm" class="mb-2">
+        <b-row class="mb-2">
+            <b-col>
+                <b-input-group size="sm">
                     <b-input-group-prepend is-text>
                         <b-icon icon="search" class="orange"></b-icon>
                     </b-input-group-prepend>
                     <b-form-input type="search" size="sm" :value="search_text" @input="onInputSearch($event, 'search_text')"></b-form-input>
                 </b-input-group>
-                <TagSearch :tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
             </b-col>
             <b-col>
                 <b-form-checkbox-group
@@ -16,28 +15,39 @@
                     :value="search_websites"
                     @input="onInputSearch($event, 'search_websites')"
                     :options="optionsWebsites"
-                    class="mb-2"
-                    value-field="value"
-                    text-field="text">
-                </b-form-checkbox-group>
-                <b-form-checkbox-group
-                    size="sm"
-                    :value="search_task_types"
-                    @input="onInputSearch($event, 'search_task_types')"
-                    :options="optionsTaskTypes"
-                    class="mb-2"
-                    value-field="value"
-                    text-field="text">
-                </b-form-checkbox-group>
-                <b-form-checkbox-group
-                    size="sm"
-                    :value="search_task_platforms"
-                    @input="onInputSearch($event, 'search_task_platforms')"
-                    :options="optionsTaskPlatforms"
                     value-field="value"
                     text-field="text">
                 </b-form-checkbox-group>
             </b-col>
+        </b-row>
+        <b-row class="mb-4">
+            <b-col>
+                <TagSearch :tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
+            </b-col>
+            <b-col>
+                <b-row>
+                    <b-col align="right">
+                        <b-form-checkbox-group
+                            size="sm"
+                            :value="search_task_types"
+                            @input="onInputSearch($event, 'search_task_types')"
+                            :options="optionsTaskTypes"
+                            value-field="value"
+                            text-field="text">
+                        </b-form-checkbox-group>
+                    </b-col>
+                    <b-col align="left">
+                        <b-form-checkbox-group
+                            size="sm"
+                            :value="search_task_platforms"
+                            @input="onInputSearch($event, 'search_task_platforms')"
+                            :options="optionsTaskPlatforms"
+                            value-field="value"
+                            text-field="text">
+                        </b-form-checkbox-group>
+                    </b-col>
+                </b-row>
+            </b-col> 
         </b-row>
     </div>
 </template>
