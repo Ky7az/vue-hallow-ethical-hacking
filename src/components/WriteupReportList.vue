@@ -19,7 +19,7 @@
                         <small v-for="tagDetail in reportDetail.tags"
                                 :key="tagDetail.id"
                                 :title="tagDetail.name">
-                            #{{tag.name}}
+                            #{{tagDetail.name}}
                         </small>
                         <router-link :to="`/writeup/rpt/${reportDetail.slug}`">
                             <b-icon icon="arrow-up-right-circle" class="orange"></b-icon>
