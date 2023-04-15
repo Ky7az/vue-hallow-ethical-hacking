@@ -17,6 +17,9 @@
                 <TagSearch :tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
             </b-col>
             <b-col>
+                <b-col>
+                    <b-form-checkbox switch size="sm" :checked="search_bookmarked" @input="onInputSearch($event, 'search_bookmarked')">Bookmarked</b-form-checkbox>
+                </b-col>
             </b-col>
         </b-row>
     </div>
@@ -43,7 +46,8 @@ export default {
         ...Vuex.mapState('soup', [
             'tags',
             'search_text',
-            'search_tags'
+            'search_tags',
+            'search_bookmarked'
         ])
     },
     methods: {
@@ -54,7 +58,8 @@ export default {
         onInputSearch: _.debounce(function(event, field) {
             let search = {
                 search_text: this.search_text, 
-                search_tags: this.search_tags
+                search_tags: this.search_tags,
+                search_bookmarked: this.search_bookmarked
             };
             search[field] = event;
             this.updateSearchParams(search);

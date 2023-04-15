@@ -7,26 +7,26 @@
         </b-row>
         <WriteupReportSearch @updated-search="onUpdatedSearch"/>
         <b-row cols="1" cols-sm="2" cols-md="3" cols-lg="4" cols-xl="6">
-            <b-col v-for="report in reports"
-                   :key="report.id"
-                   :title="report.name"
+            <b-col v-for="reportDetail in reports"
+                   :key="reportDetail.id"
+                   :title="reportDetail.name"
                    class="mb-4">
-                <b-card :header="report.name"
-                        :sub-title="report.website.name + ' - ' + report.task_type_display"
+                <b-card :header="reportDetail.name"
+                        :sub-title="reportDetail.website.name + ' - ' + reportDetail.task_type_display"
                         bg-variant="dark"
                         text-variant="white" >
                     <b-card-text>
-                        <small v-for="tag in report.tags"
-                                :key="tag.id"
-                                :title="tag.name">
+                        <small v-for="tagDetail in reportDetail.tags"
+                                :key="tagDetail.id"
+                                :title="tagDetail.name">
                             #{{tag.name}}
                         </small>
-                        <router-link :to="`/writeup/rpt/${report.slug}`">
+                        <router-link :to="`/writeup/rpt/${reportDetail.slug}`">
                             <b-icon icon="arrow-up-right-circle" class="orange"></b-icon>
                         </router-link>
                     </b-card-text>
                     <template #footer>
-                        <small class="text-muted">Updated <timeago :datetime="report.write_date" :auto-update="60"></timeago></small>
+                        <small class="text-muted">Updated <timeago :datetime="reportDetail.write_date" :auto-update="60"></timeago></small>
                     </template>
                 </b-card>
             </b-col>

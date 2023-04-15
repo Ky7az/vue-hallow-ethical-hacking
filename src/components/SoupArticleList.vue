@@ -7,25 +7,29 @@
         </b-row>
         <SoupArticleSearch @updated-search="onUpdatedSearch"/>
         <b-row cols="1" cols-sm="2" cols-md="3" cols-lg="4" cols-xl="6">
-            <b-col v-for="article in articles"
-                   :key="article.id"
-                   :title="article.name"
+            <b-col v-for="articleDetail in articles"
+                   :key="articleDetail.id"
+                   :title="articleDetail.name"
                 class="mb-4">
-                <b-card :header="article.name"
-                        bg-variant="dark"
+                <b-card bg-variant="dark"
                         text-variant="white">
+                    <template #header>
+                        {{articleDetail.name}}
+                        <b-icon icon="bookmark-star" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="!articleDetail.bookmarked"></b-icon>
+                        <b-icon icon="bookmark-star-fill" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="articleDetail.bookmarked"></b-icon>
+                    </template>
                     <b-card-text>
-                        <small v-for="tag in article.tags"
-                               :key="tag.id"
-                               :title="tag.name">
-                            #{{tag.name}}
+                        <small v-for="tagDetail in articleDetail.tags"
+                               :key="tagDetail.id"
+                               :title="tagDetail.name">
+                            #{{tagDetail.name}}
                         </small>
-                        <router-link :to="`/soup/art/${article.slug}`">
+                        <router-link :to="`/soup/art/${articleDetail.slug}`">
                             <b-icon icon="arrow-up-right-circle" class="orange"></b-icon>
                         </router-link>
                     </b-card-text>
                     <template #footer>
-                        <small class="text-muted">Updated <timeago :datetime="article.write_date" :auto-update="60"></timeago></small>
+                        <small class="text-muted">Updated <timeago :datetime="articleDetail.write_date" :auto-update="60"></timeago></small>
                     </template>
                 </b-card>
             </b-col>
@@ -70,6 +74,7 @@ export default {
     methods: {
         ...Vuex.mapActions('soup', [
             'loadArticles',
+            'updateArticle',
             'updateSelectedPage'
         ]),
         onUpdatedSearch() {
@@ -84,6 +89,12 @@ export default {
             })
             .catch(() => {
             });
+        },
+        onClickArticleBookmark(articleDetail) {
+            var data = {
+                bookmarked: !articleDetail.bookmarked
+            }
+            this.updateArticle({article: articleDetail, data});
         },
         selectPage(pageNum) {
             this.updateSelectedPage(pageNum);

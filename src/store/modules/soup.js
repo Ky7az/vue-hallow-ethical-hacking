@@ -11,6 +11,7 @@ const state = {
     selected_page: 1,
     search_text: null,
     search_tags: [],
+    search_bookmarked: null,
     search_params: null
 }
 
@@ -94,6 +95,9 @@ const mutations = {
         if (search.search_tags.length)
             search.search_tags.forEach(tag => params.push('tags=' + slugify(tag, {'replacement': '-', 'lower': true})));
         state.search_tags = search.search_tags;
+        if (search.search_bookmarked)
+            params.push('bookmarked=' + search.search_bookmarked);
+        state.search_bookmarked = search.search_bookmarked;
         state.search_params = params.join('&');
     }
 }
