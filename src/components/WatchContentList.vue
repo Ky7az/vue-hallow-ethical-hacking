@@ -99,6 +99,11 @@ export default {
             .catch(() => {
             });
         },
+        pollContents() {
+            this.$options.interval = setInterval(() => {
+                this.loadContents();
+            }, 60000);
+        },
         onClickContentView(contentDetail) {
             var data = {
                 viewed: true
@@ -124,6 +129,14 @@ export default {
                 this.abort_controller.abort();
             }
         }
+    },
+    created() {
+        if (TokenService.getToken()) {
+            this.pollContents();
+        }
+    },
+    beforeDestroy() {
+        clearInterval(this.$options.interval);
     }
 }
 </script>
