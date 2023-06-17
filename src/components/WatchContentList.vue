@@ -18,6 +18,7 @@
                             <b-th>Created</b-th>
                             <b-th></b-th>
                             <b-th></b-th>
+                            <b-th></b-th>
                         </b-tr>
                     </b-thead>
                     <b-tbody>
@@ -31,6 +32,9 @@
                                 <a :href="`${contentDetail.url}`" @click.left="onClickContentView(contentDetail)" @click.middle="onClickContentView(contentDetail)" target="_blank">
                                     <b-icon icon="arrow-up-right-circle" title="View" class="orange"></b-icon>
                                 </a>
+                            </b-td>
+                            <b-td>
+                                <b-icon icon="x-square" title="Skip" class="orange" @click="onClickContentView(contentDetail)"></b-icon>
                             </b-td>
                             <b-td>
                                 <b-icon icon="bookmark-star" title="Bookmark" class="orange" @click="onClickContentBookmark(contentDetail)" v-if="!contentDetail.bookmarked"></b-icon>
