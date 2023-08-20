@@ -48,4 +48,10 @@ export default {
     color: #f55151;
 }
 
+.card-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 </style>

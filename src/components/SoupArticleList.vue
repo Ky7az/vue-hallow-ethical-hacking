@@ -14,22 +14,23 @@
                 <b-card bg-variant="dark"
                         text-variant="white">
                     <template #header>
-                        {{articleDetail.name}}
-                        <b-icon icon="bookmark-star" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="!articleDetail.bookmarked"></b-icon>
-                        <b-icon icon="bookmark-star-fill" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="articleDetail.bookmarked"></b-icon>
+                        <div class="orange card-overflow" @click="onClickArticleCard(articleDetail)">
+                            {{articleDetail.name}}
+                        </div>
                     </template>
-                    <b-card-text>
+                    <b-card-text class="card-overflow">
                         <small v-for="tagDetail in articleDetail.tags"
                                :key="tagDetail.id"
                                :title="tagDetail.name">
                             #{{tagDetail.name}}
                         </small>
-                        <router-link :to="`/soup/art/${articleDetail.slug}`">
-                            <b-icon icon="arrow-up-right-circle" class="orange"></b-icon>
-                        </router-link>
+                        <small v-if="articleDetail.tags.length === 0">#No Tags</small>
                     </b-card-text>
                     <template #footer>
                         <small class="text-muted">Updated <timeago :datetime="articleDetail.write_date" :auto-update="60"></timeago></small>
+                        &nbsp;
+                        <b-icon icon="bookmark-star" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="!articleDetail.bookmarked"></b-icon>
+                        <b-icon icon="bookmark-star-fill" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="articleDetail.bookmarked"></b-icon>
                     </template>
                 </b-card>
             </b-col>
@@ -89,6 +90,9 @@ export default {
             })
             .catch(() => {
             });
+        },
+        onClickArticleCard(articleDetail) {
+            this.$router.push(`/soup/art/${articleDetail.slug}`);
         },
         onClickArticleBookmark(articleDetail) {
             var data = {

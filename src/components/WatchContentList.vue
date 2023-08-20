@@ -8,7 +8,7 @@
         <WatchContentSearch @updated-search="onUpdatedSearch"/>
         <b-row>
             <b-col>
-                <b-table-simple v-if="contents.length">
+                <b-table-simple hover v-if="contents.length">
                     <b-thead>
                         <b-tr>
                             <b-th>Title</b-th>

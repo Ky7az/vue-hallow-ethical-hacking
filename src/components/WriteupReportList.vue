@@ -11,19 +11,21 @@
                    :key="reportDetail.id"
                    :title="reportDetail.name"
                    class="mb-4">
-                <b-card :header="reportDetail.name"
-                        :sub-title="reportDetail.website.name + ' - ' + reportDetail.task_type_display"
+                <b-card :sub-title="reportDetail.website.name + ' - ' + reportDetail.task_type_display"
                         bg-variant="dark"
-                        text-variant="white" >
-                    <b-card-text>
+                        text-variant="white">
+                    <template #header>
+                        <div class="orange card-overflow" @click="onClickReportCard(reportDetail)">
+                            {{reportDetail.name}}
+                        </div>
+                    </template>
+                    <b-card-text class="card-overflow">
                         <small v-for="tagDetail in reportDetail.tags"
-                                :key="tagDetail.id"
-                                :title="tagDetail.name">
+                               :key="tagDetail.id"
+                               :title="tagDetail.name">
                             #{{tagDetail.name}}
                         </small>
-                        <router-link :to="`/writeup/rpt/${reportDetail.slug}`">
-                            <b-icon icon="arrow-up-right-circle" class="orange"></b-icon>
-                        </router-link>
+                        <small v-if="reportDetail.tags.length === 0">#No Tags</small>
                     </b-card-text>
                     <template #footer>
                         <small class="text-muted">Updated <timeago :datetime="reportDetail.write_date" :auto-update="60"></timeago></small>
@@ -85,6 +87,9 @@ export default {
             })
             .catch(() => {
             });
+        },
+        onClickReportCard(reportDetail) {
+            this.$router.push(`/writeup/rpt/${reportDetail.slug}`);
         },
         selectPage(pageNum) {
             this.updateSelectedPage(pageNum);
