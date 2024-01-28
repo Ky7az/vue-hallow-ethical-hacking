@@ -33,7 +33,7 @@
 <script>
 import axios from 'axios';
 
-import { API_HOST } from '../storage/service'
+import { PROTO, API_HOST } from '../storage/service'
 
 export default {
     name: 'Login',
@@ -49,7 +49,7 @@ export default {
     },
     methods: {
         onSubmitLogin() {
-            axios.post(`https://${API_HOST}/auth/`, {
+            axios.post(`${PROTO}://${API_HOST}/auth/`, {
                 username: this.username,
                 password: this.password
             })

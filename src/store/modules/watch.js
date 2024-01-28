@@ -1,7 +1,7 @@
 import axios from 'axios';
 import slugify from "slugify";
 
-import {API_HOST, AxiosConfig} from '../../storage/service'
+import {PROTO, API_HOST, AxiosConfig} from '../../storage/service'
 
 
 const state = {
@@ -29,31 +29,31 @@ const getters = {
 const actions = {
     // Tags
     async loadTags({ commit }) {
-        const res = await axios.get(`https://${API_HOST}/api/watch/tags/`, AxiosConfig);
+        const res = await axios.get(`${PROTO}://${API_HOST}/api/watch/tags/`, AxiosConfig);
         commit('SET_TAGS', res.data);
     },
     // Sources
     async loadSources({ commit }) {
-        const res = await axios.get(`https://${API_HOST}/api/watch/sources/`, AxiosConfig);
+        const res = await axios.get(`${PROTO}://${API_HOST}/api/watch/sources/`, AxiosConfig);
         commit('SET_SOURCES', res.data);
     },
     // Feeds
     async loadFeeds({ commit }) {
-        const res = await axios.get(`https://${API_HOST}/api/watch/feeds/`, AxiosConfig);
+        const res = await axios.get(`${PROTO}://${API_HOST}/api/watch/feeds/`, AxiosConfig);
         commit('SET_FEEDS', res.data);
     },
     async createFeed({ commit }, data) {
-        const res = await axios.post(`https://${API_HOST}/api/watch/feeds/`, data, AxiosConfig)
+        const res = await axios.post(`${PROTO}://${API_HOST}/api/watch/feeds/`, data, AxiosConfig)
         commit('CREATE_FEED', res.data);
         return res.data;
     },
     async updateFeed({ commit }, {feed, data}) {
-        const res = await axios.patch(`https://${API_HOST}/api/watch/feeds/${feed.id}/`, data, AxiosConfig);
+        const res = await axios.patch(`${PROTO}://${API_HOST}/api/watch/feeds/${feed.id}/`, data, AxiosConfig);
         commit('UPDATE_FEED', res.data);
         return res.data;
     },
     async deleteFeed({ commit }, feed) {
-        await axios.delete(`https://${API_HOST}/api/watch/feeds/${feed.id}/`, AxiosConfig);
+        await axios.delete(`${PROTO}://${API_HOST}/api/watch/feeds/${feed.id}/`, AxiosConfig);
         commit('DELETE_FEED', feed);
     },
     // Contents
@@ -62,17 +62,17 @@ const actions = {
         let req_params = `?page=${state.selected_page}`;
         if (state.search_params)
             req_params += `&${state.search_params}`;
-        const res = await axios.get(`https://${API_HOST}/api/watch/contents/${req_params}`, AxiosConfig);
+        const res = await axios.get(`${PROTO}://${API_HOST}/api/watch/contents/${req_params}`, AxiosConfig);
         commit('SET_CONTENTS', res.data.results);
         commit('SET_CONTENT_COUNT', res.data.count);
     },
     async updateContent({ commit }, {content, data}) {
-        const res = await axios.patch(`https://${API_HOST}/api/watch/contents/${content.id}/`, data, AxiosConfig);
+        const res = await axios.patch(`${PROTO}://${API_HOST}/api/watch/contents/${content.id}/`, data, AxiosConfig);
         commit('UPDATE_CONTENT', res.data);
         return res.data;
     },
     async deleteContent({ commit }, content) {
-        await axios.delete(`https://${API_HOST}/api/watch/contents/${content.id}/`, AxiosConfig);
+        await axios.delete(`${PROTO}://${API_HOST}/api/watch/contents/${content.id}/`, AxiosConfig);
         commit('DELETE_CONTENT', content);
     },
     // Selected Page
