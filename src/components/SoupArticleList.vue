@@ -1,63 +1,67 @@
 <template>
     <div>
-        <b-row class="mb-4">
-            <b-col>
-                <b-button to="/soup/new">New</b-button>
-            </b-col>
-        </b-row>
+        <div class="row mb-4">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/soup/new">New</router-link>
+            </div>
+        </div>
         <SoupArticleSearch @updated-search="onUpdatedSearch"/>
-        <b-row cols="1" cols-sm="2" cols-md="3" cols-lg="4" cols-xl="6">
-            <b-col v-for="articleDetail in articles"
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+            <div class="col mb-4"
+                   v-for="articleDetail in articles"
                    :key="articleDetail.id"
                    :title="articleDetail.name"
-                class="mb-4">
-                <b-card bg-variant="dark"
-                        text-variant="white">
-                    <template #header>
+                >
+                <div class="card text-white">
+                    <div class="card-header">
                         <div class="orange card-overflow" @click="onClickArticleCard(articleDetail)">
-                            {{articleDetail.name}}
+                            {{ articleDetail.name }}
                         </div>
-                    </template>
-                    <b-card-text class="card-overflow">
-                        <small v-for="tagDetail in articleDetail.tags"
-                               :key="tagDetail.id"
-                               :title="tagDetail.name">
-                            #{{tagDetail.name}}
-                        </small>
-                        <small v-if="articleDetail.tags.length === 0">#No Tags</small>
-                    </b-card-text>
-                    <template #footer>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <small v-for="tagDetail in articleDetail.tags"
+                                :key="tagDetail.id"
+                                :title="tagDetail.name">
+                                #{{ tagDetail.name }}
+                            </small>
+                            <small v-if="articleDetail.tags.length === 0">#No Tags</small>
+                        </p>
+                    </div>
+                    <div class="card-footer">
                         <small class="text-muted">Updated <timeago :datetime="articleDetail.write_date" :auto-update="60"></timeago></small>
                         &nbsp;
-                        <b-icon icon="bookmark-star" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="!articleDetail.bookmarked"></b-icon>
-                        <b-icon icon="bookmark-star-fill" title="Bookmark" class="orange" @click="onClickArticleBookmark(articleDetail)" v-if="articleDetail.bookmarked"></b-icon>
-                    </template>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-pagination
-                    :value="selected_page"
-                    :total-rows="article_count"
-                    :per-page="article_per_page"
-                    align="right"
-                    @change="selectPage"
-                ></b-pagination>
-            </b-col>
-        </b-row>
+                        <i class="bi-bookmark-star orange" title="Bookmark" @click="onClickArticleBookmark(articleDetail)" v-if="!articleDetail.bookmarked"></i>
+                        <i class="bi-bookmark-star-fill orange" title="Bookmark" @click="onClickArticleBookmark(articleDetail)" v-if="articleDetail.bookmarked"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <VueginateBootstrap
+                    :total-items="article_count"
+                    :current-page="selected_page"
+                    :items-per-page="article_per_page"
+                    :custom-styles="{ container: ['justify-content-end'] }"
+                    @page-change="selectPage"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
+import { VueginateBootstrap } from 'vueginate'
 
 import SoupArticleSearch from '@/components/SoupArticleSearch'
 
 export default {
     name: 'SoupArticleList',
     components: {
-        SoupArticleSearch
+        SoupArticleSearch,
+        VueginateBootstrap
     },
     data() {
         return {

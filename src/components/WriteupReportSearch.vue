@@ -1,54 +1,56 @@
 <template>
     <div>
-        <b-row class="mb-2">
-            <b-col>
-                <b-input-group size="sm">
-                    <b-input-group-prepend is-text>
-                        <b-icon icon="search" class="orange"></b-icon>
-                    </b-input-group-prepend>
-                    <b-form-input type="search" size="sm" :value="search_text" @input="onInputSearch($event, 'search_text')"></b-form-input>
-                </b-input-group>
-            </b-col>
-            <b-col>
-                <b-form-checkbox-group
-                    size="sm"
-                    :value="search_websites"
-                    @input="onInputSearch($event, 'search_websites')"
-                    :options="optionsWebsites"
-                    value-field="value"
-                    text-field="text">
-                </b-form-checkbox-group>
-            </b-col>
-        </b-row>
-        <b-row class="mb-4">
-            <b-col>
-                <TagSearch :tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
-            </b-col>
-            <b-col>
-                <b-row>
-                    <b-col align="right">
-                        <b-form-checkbox-group
-                            size="sm"
-                            :value="search_task_types"
-                            @input="onInputSearch($event, 'search_task_types')"
-                            :options="optionsTaskTypes"
-                            value-field="value"
-                            text-field="text">
-                        </b-form-checkbox-group>
-                    </b-col>
-                    <b-col align="left">
-                        <b-form-checkbox-group
-                            size="sm"
-                            :value="search_task_platforms"
-                            @input="onInputSearch($event, 'search_task_platforms')"
-                            :options="optionsTaskPlatforms"
-                            value-field="value"
-                            text-field="text">
-                        </b-form-checkbox-group>
-                    </b-col>
-                </b-row>
-            </b-col> 
-        </b-row>
+        <div class="row mb-2">
+            <div class="col">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-text">
+                        <i class="bi-search orange"></i>
+                    </div>
+                    <input type="search" class="form-control form-control-sm" :value="search_text" @input="onInputSearch($event.target.value, 'search_text')"/>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-check form-check-inline"
+                        v-for="option in optionsWebsites"
+                        :key="option.value"
+                >
+                    <input :id="option.value" class="form-check-input" type="checkbox" :value="option.value" v-model="checked_websites"/>
+                    <label :for="option.value" class="form-check-label"><span>{{ option.text }}</span></label>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-text">
+                        <i class="bi-tag-fill orange"></i>
+                    </div>
+                    <TagSearch :all_tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="col" align="right">
+                        <div class="form-check form-check-inline"
+                                v-for="option in optionsTaskTypes"
+                                :key="option.value"
+                        >
+                            <input :id="option.value" class="form-check-input" type="checkbox" :value="option.value" v-model="checked_task_types"/>
+                            <label :for="option.value" class="form-check-label">{{ option.text }}</label>
+                        </div>
+                    </div>
+                    <div class="col" align="left">
+                        <div class="form-check form-check-inline"
+                                v-for="option in optionsTaskPlatforms"
+                                :key="option.value"
+                        >
+                            <input :id="option.value" class="form-check-input" type="checkbox" :value="option.value" v-model="checked_task_platforms"/>
+                            <label :for="option.value" class="form-check-label">{{ option.text }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
     </div>
 </template>
 
@@ -73,7 +75,21 @@ export default {
             optionsTaskPlatforms: [
                 {value: 'linux', text: 'Linux'},
                 {value: 'windows', text: 'Windows'}
-            ]
+            ],
+            checked_websites: [],
+            checked_task_types: [],
+            checked_task_platforms: []
+        }
+    },
+    watch: {
+        checked_websites: function(val) {
+            this.onInputSearch(val, 'search_websites');
+        },
+        checked_task_types: function(val) {
+            this.onInputSearch(val, 'search_task_types');
+        },
+        checked_task_platforms: function(val) {
+            this.onInputSearch(val, 'search_task_platforms');
         }
     },
     computed: {

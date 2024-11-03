@@ -1,31 +1,27 @@
-import Vue from 'vue'
+import { createApp, h } from "vue"
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
-import { enable as enableDarkMode } from 'darkreader'
-import { TablePlugin } from 'bootstrap-vue'
-import VueHotkey from 'v-hotkey'
-import VueTimeago from 'vue-timeago'
+import VueHotkey from 'v-hotkey3'
+import VueTimeago from 'vue-timeago3'
 
-Vue.config.productionTip = false;
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-Vue.use(TablePlugin);
-Vue.use(VueHotkey);
-Vue.use(VueTimeago, {
-    locale: 'fr',
-    locales: {
-      'fr-FR': require('date-fns/locale/fr')
-    }
+const app = createApp({
+    render: () => h(App)
 });
-enableDarkMode();
 
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+app.use(router);
+app.use(store);
+app.use(VueHotkey);
 
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app');
+const timeagoOptions = {
+    converterOptions: {
+        includeSeconds: false
+    }
+};
+app.use(VueTimeago, timeagoOptions);
+
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap'
+import 'bootstrap-icons/font/bootstrap-icons.css'
+
+app.mount("#app");

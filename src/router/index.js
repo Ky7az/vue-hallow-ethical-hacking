@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { nextTick } from 'vue'
+import { createRouter, createWebHashHistory } from "vue-router"
 import Home from '@/views/Home.vue'
 import Soup from '@/views/Soup.vue'
 import Watch from '@/views/Watch.vue'
@@ -17,7 +17,6 @@ import WriteupReportList from '@/components/WriteupReportList.vue'
 import WriteupReportCreate from '@/components/WriteupReportCreate.vue'
 import WriteupReportOpen from '@/components/WriteupReportOpen.vue'
 
-Vue.use(VueRouter)
 
 const routes = [
     {
@@ -33,21 +32,24 @@ const routes = [
         name: 'soup',
         component: Soup,
         children: [
-            { 
+            {
+                name: 'SoupArticleList',
                 path: '', 
                 component: SoupArticleList,
                 meta: {
                     title: 'Soup - List Articles'
                 }
             },
-            { 
+            {
+                name: 'SoupArticleCreate',
                 path: 'new', 
                 component: SoupArticleCreate,
                 meta: {
                     title: 'Soup - New Article'
                 }
             },
-            { 
+            {
+                name: 'SoupArticleOpen',
                 path: 'art/:slug', 
                 component: SoupArticleOpen,
                 meta: {
@@ -61,14 +63,16 @@ const routes = [
         name: 'watch',
         component: Watch,
         children: [
-            { 
+            {
+                name: 'WatchContentList',
                 path: '', 
                 component: WatchContentList,
                 meta: {
                     title: 'Watch - List Contents'
                 }
             },
-            { 
+            {
+                name: 'WatchFeedCreate',
                 path: 'new', 
                 component: WatchFeedCreate,
                 meta: {
@@ -85,21 +89,24 @@ const routes = [
         },
         component: Pentest,
         children: [
-            { 
+            {
+                name: 'PentestTaskList',
                 path: '', 
                 component: PentestTaskList,
                 meta: {
                     title: 'Pentest - List Tasks'
                 }
             },
-            { 
+            {
+                name: 'PentestTaskCreate',
                 path: 'new', 
                 component: PentestTaskCreate,
                 meta: {
                     title: 'Pentest - Create Task'
                 }
             },
-            { 
+            {
+                name: 'PentestTaskOpen',
                 path: 'tsk/:id', 
                 component: PentestTaskOpen,
                 meta: {
@@ -113,21 +120,24 @@ const routes = [
         name: 'writeup',
         component: Writeup,
         children: [
-            { 
+            {
+                name: 'WriteupReportList',
                 path: '', 
                 component: WriteupReportList,
                 meta: {
                     title: 'Writeup - List Reports'
                 }
             },
-            { 
+            {
+                name: 'WriteupReportCreate',
                 path: 'new', 
                 component: WriteupReportCreate,
                 meta: {
                     title: 'Writeup - New Report'
                 }
             },
-            { 
+            {
+                name: 'WriteupReportOpen',
                 path: 'rpt/:slug', 
                 component: WriteupReportOpen,
                 meta: {
@@ -137,19 +147,18 @@ const routes = [
         ]
     },
     {
-        path: '*',
+        path: '/:catchAll(.*)',
         redirect: '/'
     }
-
 ]
 
-const router = new VueRouter({
-    mode: 'history',
+const router = createRouter({
+    history: createWebHashHistory(),
     routes
 })
 
 router.afterEach((to, from) => {
-    Vue.nextTick(() => {
+    nextTick(() => {
         document.title = to.meta.title || 'Hallow';
     });
 });

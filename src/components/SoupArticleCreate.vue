@@ -1,55 +1,60 @@
 <template>
     <div>
-        <b-row>
-            <b-col class="mb-4">
-                <b-button to="/soup">Back</b-button>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
+        <div class="row mb-4">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/soup">Back</router-link>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
                 <form id="form-article" @submit.prevent="submitForm">
-                    <b-row class="mb-3" align-h="center">
-                        <b-col cols="4">
-                            <b-form-input id="name" type="text" placeholder="Name" v-model="name" autofocus></b-form-input>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3" align-h="center">
-                        <b-col cols="4">
-                            <b-form-tags placeholder="Tags" v-model="selected_tags" @tag-state="onTagState"></b-form-tags>
-                        </b-col>
-                    </b-row>
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-4">
+                            <input class="form-control form-control-sm" type="text" placeholder="Name" v-model="name"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-4">
+                            <vue-tags-input
+                                v-model="tag"
+                                :tags="selected_tags"
+                                placeholder="Tags"
+                                @tags-changed="onChangeTags"
+                            />
+                        </div>
+                    </div>
                     <MarkdownEditor :markdown="content">
-                        <b-textarea id="content" name="content" v-model="content" rows="20" autofocus/>
+                        <textarea id="textarea-md-editor" class="form-control" rows="20" wrap="soft" v-model="content"/>
                     </MarkdownEditor>
-                    <b-row class="mt-3">
-                        <b-col>
-                            <input class="btn-sm btn-primary" type="submit" value="Create"/>
-                        </b-col>
-                    </b-row>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <input class="btn btn-primary btn-sm" type="submit" value="Create"/>
+                        </div>
+                    </div>
                 </form>
-            </b-col>
-        </b-row>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
-import slugify from 'slugify';
+import slugify from 'slugify'
 
-import MarkdownEditor from '@/components/MarkdownEditor';
+import VueTagsInput from '@wslyhbb/vue3-tags-input'
+import MarkdownEditor from '@/components/MarkdownEditor'
 
 export default {
     name: 'SoupArticleCreate',
     components: {
+        VueTagsInput,
         MarkdownEditor
     },
     data() {
         return {
             name: null,
+            tag: "",
             selected_tags: [],
-            valid_tags: [],
-            invalid_tags: [],
-            duplicate_tags: [],
             content: ""
         }
     },
@@ -57,22 +62,20 @@ export default {
         ...Vuex.mapActions('soup', [
             'createArticle'
         ]),
+        onChangeTags(newTags) {
+            this.selected_tags = newTags;
+        },
         submitForm() {
             let slug = slugify(this.name, {'replacement': '-', 'lower': true});
             let data = {
                 name: this.name,
                 slug: slug,
                 content: this.content,
-                tags: this.selected_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '-', 'lower': true})}))
+                tags: this.selected_tags.map(tag => ({name: tag.text, slug: slugify(tag.text, {'replacement': '-', 'lower': true})}))
             }
             this.createArticle(data).then((res) => {
                 this.$router.push(`/soup/art/${res.slug}`);
             });
-        },
-        onTagState(valid, invalid, duplicate) {
-            this.valid_tags = valid;
-            this.invalid_tags = invalid;
-            this.duplicate_tags = duplicate;
         }
     }
 }

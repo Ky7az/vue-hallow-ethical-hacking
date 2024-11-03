@@ -1,27 +1,35 @@
 <template>
     <div>
-        <b-row class="mb-2">
-            <b-col>
-                <b-input-group size="sm">
-                    <b-input-group-prepend is-text>
-                        <b-icon icon="search" class="orange"></b-icon>
-                    </b-input-group-prepend>
-                    <b-form-input type="search" size="sm" :value="search_text" @input="onInputSearch($event, 'search_text')"></b-form-input>
-                </b-input-group>
-            </b-col>
-            <b-col>
-            </b-col>
-        </b-row> 
-        <b-row class="mb-4">
-            <b-col>
-                <TagSearch :tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
-            </b-col>
-            <b-col>
-                <b-col>
-                    <b-form-checkbox switch size="sm" :checked="search_bookmarked" @input="onInputSearch($event, 'search_bookmarked')">Bookmarked</b-form-checkbox>
-                </b-col>
-            </b-col>
-        </b-row>
+        <div class="row mb-2">
+            <div class="col">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-text">
+                        <i class="bi-search orange"></i>
+                    </div>
+                    <input type="search" class="form-control form-control-sm" :value="search_text" @input="onInputSearch($event.target.value, 'search_text')"/>
+                </div>
+            </div>
+            <div class="col">
+            </div>
+        </div> 
+        <div class="row mb-4">
+            <div class="col">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-text">
+                        <i class="bi-tag-fill orange"></i>
+                    </div>
+                    <TagSearch :all_tags="tags" :search_tags="search_tags" @updated-tag-search="onInputSearch($event, 'search_tags')"/>
+                </div>
+            </div>
+            <div class="col">
+                <div class="col">
+                    <div class="form-check form-switch form-check-inline">
+                        <input class="form-check-input" type="checkbox" :checked="search_bookmarked" @input="onInputSearch($event.target.checked, 'search_bookmarked')">
+                        <label class="form-check-label">Bookmarked</label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 

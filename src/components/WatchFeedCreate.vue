@@ -1,65 +1,75 @@
 <template>
     <div>
-        <b-row>
-            <b-col>
-                <b-button to="/watch">Back</b-button>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col class="m-4">
-                <b-table-simple>
-                    <b-thead>
-                        <b-tr>
-                            <b-th>Source</b-th>
-                            <b-th>Tags</b-th>
-                            <b-th>Updated</b-th>
-                            <b-th>Count</b-th>
-                            <b-th></b-th>
-                        </b-tr>
-                    </b-thead>
-                    <b-tbody v-if="feeds.length">
-                        <b-tr v-for="feedDetail in feeds" :key="feedDetail.id">
-                            <b-td>{{ feedDetail.source.name }}</b-td>
-                            <b-td>{{ feedDetail.tag_names }}</b-td>
-                            <b-td><timeago :datetime="feedDetail.write_date" :auto-update="60"></timeago></b-td>
-                            <b-td>{{ feedDetail.count }}</b-td>
-                            <b-td>
-                                <b-icon icon="x-square" title="Delete" class="orange" @click="onClickFeedDelete(feedDetail)"></b-icon>
-                            </b-td>
-                        </b-tr>
-                    </b-tbody>
-                </b-table-simple>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col class="ml-4">
-                <b-form-select v-model="form_source" :options="optionsSources"></b-form-select>
-            </b-col>
-            <b-col>
-                <b-form-tags v-model="form_tags" @tag-state="onTagState"></b-form-tags>
-            </b-col>
-            <b-col align="left">
-                <input class="btn-sm btn-primary" value="Create" type="submit" @click="onClickFeedCreate()"/>
-            </b-col>
-        </b-row>
+        <div class="row">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/watch">Back</router-link>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col m-4">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Tags</th>
+                            <th>Updated</th>
+                            <th>Count</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="feeds.length">
+                        <tr v-for="feedDetail in feeds" :key="feedDetail.id">
+                            <td>{{ feedDetail.source.name }}</td>
+                            <td>{{ feedDetail.tag_names }}</td>
+                            <td><timeago :datetime="feedDetail.write_date" :auto-update="60"></timeago></td>
+                            <td>{{ feedDetail.count }}</td>
+                            <td>
+                                <i class="bi-x-square orange" title="Delete" @click="onClickFeedDelete(feedDetail)"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col ml-4">
+                <select class="form-select form-select-sm" v-model="form_source">
+                    <option v-for="option in optionsSources" :value="option.value" :key="option.value">
+                        {{ option.text }}
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+                <vue-tags-input
+                    v-model="tag"
+                    :tags="form_tags"
+                    @tags-changed="newTags => form_tags = newTags"
+                />
+            </div>
+            <div class="col" align="left">
+                <input class="btn btn-primary btn-sm" value="Create" type="submit" @click="onClickFeedCreate()"/>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
-import slugify from 'slugify';
+import slugify from 'slugify'
 
 import { TokenService } from '../storage/service'
+import VueTagsInput from '@wslyhbb/vue3-tags-input'
 
 export default {
     name: 'WatchFeedList',
+    components: {
+        VueTagsInput
+    },
     data() {
         return {
             form_source: null,
-            form_tags: [],
-            valid_tags: [],
-            invalid_tags: [],
-            duplicate_tags: []
+            tag: "",
+            form_tags: []
         }
     },
     computed: {
@@ -77,11 +87,6 @@ export default {
             'createFeed',
             'deleteFeed'
         ]),
-        onTagState(valid, invalid, duplicate) {
-            this.valid_tags = valid;
-            this.invalid_tags = invalid;
-            this.duplicate_tags = duplicate;
-        },
         onClickFeedDelete(feedDetail) {
             var is_ok = confirm("Delete Feed ?");
             if (is_ok) {
@@ -91,7 +96,7 @@ export default {
         onClickFeedCreate() {
             var data = {
                 source_id: this.form_source,
-                tags: this.form_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '-', 'lower': true})}))
+                tags: this.form_tags.map(tag => ({name: tag.text, slug: slugify(tag.text, {'replacement': '-', 'lower': true})}))
             }
             this.createFeed(data).then(() => {
                 this.form_source = null;

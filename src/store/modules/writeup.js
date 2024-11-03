@@ -1,5 +1,5 @@
-import axios from 'axios';
-import slugify from "slugify";
+import axios from 'axios'
+import slugify from "slugify"
 
 import {PROTO, API_HOST, AxiosConfig} from '../../storage/service'
 
@@ -105,7 +105,7 @@ const mutations = {
             params.push('name_or_content=' + search.search_text);
         state.search_text = search.search_text;
         if (search.search_tags.length)
-            search.search_tags.forEach(tag => params.push('tags=' + slugify(tag, {'replacement': '-', 'lower': true})));
+            search.search_tags.forEach(tag => params.push('tags=' + slugify(tag.text, {'replacement': '-', 'lower': true})));
         state.search_tags = search.search_tags;
         if (search.search_websites.length)
             search.search_websites.forEach(website => params.push('website=' + website));

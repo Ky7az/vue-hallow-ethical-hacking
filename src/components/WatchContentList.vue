@@ -1,61 +1,61 @@
 <template>
     <div>
-        <b-row class="mb-4">
-            <b-col>
-                <b-button to="/watch/new">New</b-button>
-            </b-col>
-        </b-row>
+        <div class="row mb-4">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/watch/new">New</router-link>
+            </div>
+        </div>
         <WatchContentSearch @updated-search="onUpdatedSearch"/>
-        <b-row>
-            <b-col>
-                <b-table-simple hover v-if="contents.length">
-                    <b-thead>
-                        <b-tr>
-                            <b-th>Title</b-th>
-                            <b-th>Source</b-th>
-                            <b-th>Type</b-th>
-                            <b-th>Tag</b-th>
-                            <b-th>Created</b-th>
-                            <b-th></b-th>
-                            <b-th></b-th>
-                            <b-th></b-th>
-                        </b-tr>
-                    </b-thead>
-                    <b-tbody>
-                        <b-tr v-for="contentDetail in contents" :key="contentDetail.id">
-                            <b-td>{{ contentDetail.title }}</b-td>
-                            <b-td>{{ contentDetail.source.name }}</b-td>
-                            <b-td>{{ contentDetail.source.source_type_display }}</b-td>
-                            <b-td>{{ contentDetail.tag && contentDetail.tag.name }}</b-td>
-                            <b-td><timeago :datetime="contentDetail.create_date" :auto-update="60"></timeago></b-td>
-                            <b-td>
+        <div class="row">
+            <div class="col">
+                <table class="table table-hover" v-if="contents.length">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Source</th>
+                            <th>Type</th>
+                            <th>Tag</th>
+                            <th>Created</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="contentDetail in contents" :key="contentDetail.id">
+                            <td>{{ contentDetail.title }}</td>
+                            <td>{{ contentDetail.source.name }}</td>
+                            <td>{{ contentDetail.source.source_type_display }}</td>
+                            <td>{{ contentDetail.tag && contentDetail.tag.name }}</td>
+                            <td><timeago :datetime="contentDetail.create_date" :auto-update="60"></timeago></td>
+                            <td>
                                 <a :href="`${contentDetail.url}`" @click.left="onClickContentView(contentDetail)" @click.middle="onClickContentView(contentDetail)" target="_blank">
-                                    <b-icon icon="arrow-up-right-circle" title="View" class="orange"></b-icon>
+                                    <i class="bi-arrow-up-right-circle orange" title="View"></i>
                                 </a>
-                            </b-td>
-                            <b-td>
-                                <b-icon icon="x-square" title="Skip" class="orange" @click="onClickContentView(contentDetail)"></b-icon>
-                            </b-td>
-                            <b-td>
-                                <b-icon icon="bookmark-star" title="Bookmark" class="orange" @click="onClickContentBookmark(contentDetail)" v-if="!contentDetail.bookmarked"></b-icon>
-                                <b-icon icon="bookmark-star-fill" title="Bookmark" class="orange" @click="onClickContentBookmark(contentDetail)" v-if="contentDetail.bookmarked"></b-icon>
-                            </b-td>
-                        </b-tr>
-                    </b-tbody>
-                </b-table-simple>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-pagination
-                    :value="selected_page"
-                    :total-rows="content_count"
-                    :per-page="content_per_page"
-                    align="right"
-                    @change="selectPage"
-                ></b-pagination>
-            </b-col>
-        </b-row>
+                            </td>
+                            <td>
+                                <i class="bi-x-square orange" title="Skip" @click="onClickContentView(contentDetail)"></i>
+                            </td>
+                            <td>
+                                <i class="bi-bookmark-star orange" title="Bookmark" @click="onClickContentBookmark(contentDetail)" v-if="!contentDetail.bookmarked"></i>
+                                <i class="bi-bookmark-star-fill orange" title="Bookmark" @click="onClickContentBookmark(contentDetail)" v-if="contentDetail.bookmarked"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <VueginateBootstrap
+                    :total-items="content_count"
+                    :current-page="selected_page"
+                    :items-per-page="content_per_page"
+                    :custom-styles="{ container: ['justify-content-end'] }"
+                    @page-change="selectPage"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -63,13 +63,15 @@
 import Vuex from 'vuex'
 
 import { TokenService } from '../storage/service'
+import { VueginateBootstrap } from 'vueginate'
 
 import WatchContentSearch from '@/components/WatchContentSearch'
 
 export default {
     name: 'WatchContentList',
     components: {
-        WatchContentSearch
+        WatchContentSearch,
+        VueginateBootstrap
     },
     data() {
         return {

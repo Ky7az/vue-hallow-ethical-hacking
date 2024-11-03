@@ -1,58 +1,63 @@
 <template>
     <div v-if="reportDetail">
-        <b-row class="mb-4">
-            <b-col>
-                <b-button to="/writeup">Back</b-button>
-            </b-col>
-        </b-row>
-        <b-row class="mb-3">
-            <b-col>
+        <div class="row mb-4">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/writeup">Back</router-link>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
                 <b>{{ reportDetail.name }}</b>
-            </b-col>
-        </b-row>
-        <b-row class="mb-3" align-h="center">
-            <b-col cols="2">
+            </div>
+        </div>
+        <div class="row mb-3 justify-content-center">
+            <div class="col-2">
                 {{ reportDetail.website.name }} - {{ reportDetail.task_type_display }} {{ reportDetail.task_platform_display && ' - ' + reportDetail.task_platform_display || '' }}
-            </b-col>
-        </b-row>
-        <b-row class="mb-3" align-h="center">
-            <b-col cols="2">
-                <b-link :href="reportDetail.task_url" target="new">Link</b-link>
-            </b-col>
-        </b-row>
-        <b-row class="mb-3" align-h="center">
-            <b-col cols="4">
-                <b-form-tags placeholder="Tags" :value="selectedTags" @input="onInputReportUpdate($event, reportDetail, 'tags')" @tag-state="onTagState"></b-form-tags>
-            </b-col>
-        </b-row>
+            </div>
+        </div>
+        <div class="row mb-3 justify-content-center">
+            <div class="col-2">
+                <a :href="reportDetail.task_url" target="new">Link</a>
+            </div>
+        </div>
+        <div class="row mb-3 justify-content-center">
+            <div class="col-4">
+                <vue-tags-input
+                    v-model="tag"
+                    :tags="selectedTags"
+                    placeholder="Tags"
+                    @tags-changed="onChangeTags"
+                />
+            </div>
+        </div>
         <MarkdownEditor :markdown="reportDetail.content">
-            <b-textarea :value="reportDetail.content" @change="onInputReportUpdate($event, reportDetail, 'content')" rows="50" autofocus/>
+            <textarea :value="reportDetail.content" id="textarea-md-editor" class="form-control" rows="50" wrap="soft" @change="onInputReportUpdate($event.target.value, reportDetail, 'content')"/>
         </MarkdownEditor>
-        <b-row class="mt-3">
-            <b-col>
-                <b-button variant="danger" size="sm" class="m-2" @click="onClickReportDelete(reportDetail)">Delete</b-button>
-            </b-col>
-        </b-row>
+        <div class="row mt-3">
+            <div class="col">
+                <button type="button" class="btn m-2 btn-danger btn-sm" @click="onClickReportDelete(reportDetail)">Delete</button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
 import _ from 'lodash'
-import slugify from 'slugify';
+import slugify from 'slugify'
 
-import MarkdownEditor from '@/components/MarkdownEditor';
+import VueTagsInput from '@wslyhbb/vue3-tags-input'
+import MarkdownEditor from '@/components/MarkdownEditor'
 
 export default {
     name: 'WriteupReportOpen',
     components: {
+        VueTagsInput,
         MarkdownEditor
     },
     data() {
         return {
-            valid_tags: [],
-            invalid_tags: [],
-            duplicate_tags: []
+            tag: ""
         }
     },
     computed: {
@@ -71,6 +76,9 @@ export default {
             'deleteReport',
             'updateReport'
         ]),
+        onChangeTags(newTags) {
+            this.onInputReportUpdate(newTags, this.reportDetail, 'tags');
+        },
         onClickReportDelete(report) {
             var is_ok = confirm("Delete Report ?");
             if (is_ok) {
@@ -82,15 +90,10 @@ export default {
         onInputReportUpdate(event, report, field) {
             let data = {};
             if (field === 'tags')
-                data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '-', 'lower': true})}));
+                data[field] = event.map(tag => ({name: tag.text, slug: slugify(tag.text, {'replacement': '-', 'lower': true})}));
             else
                 data[field] = event;
             this.updateReport({report, data});
-        },
-        onTagState(valid, invalid, duplicate) {
-            this.valid_tags = valid;
-            this.invalid_tags = invalid;
-            this.duplicate_tags = duplicate;
         }
     }
 }

@@ -1,71 +1,88 @@
 <template>
     <div>
-        <b-row>
-            <b-col class="mb-4">
-                <b-button to="/writeup">Back</b-button>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
+        <div class="row mb-4">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/writeup">Back</router-link>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
                 <form id="form-report" @submit.prevent="submitForm">
-                    <b-row class="mb-3" align-h="center">
-                        <b-col cols="4">
-                            <b-form-input id="name" type="text" placeholder="Name" v-model="name" autofocus></b-form-input>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3" align-h="center">
-                        <b-col cols="2">
-                            <b-form-select id="website" v-model="website" :options="optionsWebsites"></b-form-select>
-                        </b-col>
-                        <b-col cols="2">
-                            <b-form-select id="task_type" v-model="task_type" :options="optionsTaskTypes"></b-form-select>
-                        </b-col>
-                        <b-col cols="2">
-                            <b-form-select id="task_platform" v-model="task_platform" :options="optionsTaskPlatforms"></b-form-select>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3" align-h="center">
-                        <b-col cols="4">
-                            <b-form-input id="task_url" type="url" placeholder="Task URL" v-model="task_url"></b-form-input>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3" align-h="center">
-                        <b-col cols="4">
-                            <b-form-tags placeholder="Tags" v-model="selected_tags" @tag-state="onTagState"></b-form-tags>
-                        </b-col>
-                    </b-row>
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-4">
+                            <input class="form-control form-control-sm" type="text" placeholder="Name" v-model="name"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-2">
+                            <select class="form-select form-select-sm" v-model="website">
+                                <option v-for="option in optionsWebsites" :value="option.value" :key="option.value">
+                                    {{ option.text }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <select class="form-select form-select-sm" v-model="task_type">
+                                <option v-for="option in optionsTaskTypes" :value="option.value" :key="option.value">
+                                    {{ option.text }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <select class="form-select form-select-sm" v-model="task_platform">
+                                <option v-for="option in optionsTaskPlatforms" :value="option.value" :key="option.value">
+                                    {{ option.text }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-4">
+                            <input class="form-control form-control-sm" type="url" placeholder="Task URL" v-model="task_url"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-4">
+                            <vue-tags-input
+                                v-model="tag"
+                                :tags="selected_tags"
+                                placeholder="Tags"
+                                @tags-changed="onChangeTags"
+                            />
+                        </div>
+                    </div>
                     <MarkdownEditor :markdown="content">
-                        <b-textarea id="content" name="content" v-model="content" rows="20" autofocus/>
+                        <textarea id="textarea-md-editor" class="form-control" rows="20" wrap="soft" v-model="content"/>
                     </MarkdownEditor>
-                    <b-row class="mt-3">
-                        <b-col>
-                            <input class="btn-sm btn-primary" type="submit" value="Create"/>
-                        </b-col>
-                    </b-row>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <input class="btn btn-primary btn-sm" type="submit" value="Create"/>
+                        </div>
+                    </div>
                 </form>
-            </b-col>
-        </b-row>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
-import slugify from 'slugify';
+import slugify from 'slugify'
 
-import MarkdownEditor from '@/components/MarkdownEditor';
+import VueTagsInput from '@wslyhbb/vue3-tags-input'
+import MarkdownEditor from '@/components/MarkdownEditor'
 
 export default {
     name: 'WriteupReportCreate',
     components: {
+        VueTagsInput,
         MarkdownEditor
     },
     data() {
         return {
             name: null,
+            tag: "",
             selected_tags: [],
-            valid_tags: [],
-            invalid_tags: [],
-            duplicate_tags: [],
             website: null,
             optionsTaskTypes: [
                 {value: "", text: 'Task Type', disabled: true},
@@ -97,6 +114,9 @@ export default {
         ...Vuex.mapActions('writeup', [
             'createReport'
         ]),
+        onChangeTags(newTags) {
+            this.selected_tags = newTags;
+        },
         submitForm() {
             let slug = slugify(this.name, {'replacement': '-', 'lower': true});
             let data = {
@@ -107,16 +127,11 @@ export default {
                 task_platform: this.task_platform,
                 task_url: this.task_url,
                 content: this.content,
-                tags: this.selected_tags.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '-', 'lower': true})}))
+                tags: this.selected_tags.map(tag => ({name: tag.text, slug: slugify(tag.text, {'replacement': '-', 'lower': true})}))
             }
             this.createReport(data).then((res) => {
                 this.$router.push(`/writeup/rpt/${res.slug}`);
             });
-        },
-        onTagState(valid, invalid, duplicate) {
-            this.valid_tags = valid;
-            this.invalid_tags = invalid;
-            this.duplicate_tags = duplicate;
         }
     }
 }

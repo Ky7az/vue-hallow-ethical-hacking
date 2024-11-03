@@ -1,48 +1,53 @@
 <template>
     <div v-if="articleDetail">
-        <b-row class="mb-4">
-            <b-col>
-                <b-button to="/soup">Back</b-button>
-            </b-col>
-        </b-row>
-        <b-row class="mb-3">
-            <b-col>
-                <b>{{articleDetail.name}}</b>
-            </b-col>
-        </b-row>
-        <b-row class="mb-3" align-h="center">
-            <b-col cols="4">
-                <b-form-tags placeholder="Tags" :value="selectedTags" @input="onInputArticleUpdate($event, articleDetail, 'tags')" @tag-state="onTagState"></b-form-tags>
-            </b-col>
-        </b-row>
+        <div class="row mb-4">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/soup">Back</router-link>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col">
+                <b>{{ articleDetail.name }}</b>
+            </div>
+        </div>
+        <div class="row mb-3 justify-content-center">
+            <div class="col-4">
+                <vue-tags-input
+                    v-model="tag"
+                    :tags="selectedTags"
+                    placeholder="Tags"
+                    @tags-changed="onChangeTags"
+                />
+            </div>
+        </div>
         <MarkdownEditor :markdown="articleDetail.content">
-            <b-textarea :value="articleDetail.content" @change="onInputArticleUpdate($event, articleDetail, 'content')" rows="50" autofocus/>
+            <textarea :value="articleDetail.content" id="textarea-md-editor" class="form-control" rows="50" wrap="soft" @change="onInputArticleUpdate($event.target.value, articleDetail, 'content')"/>
         </MarkdownEditor>
-        <b-row class="mt-3">
-            <b-col>
-                <b-button variant="danger" size="sm" class="m-2" @click="onClickArticleDelete(articleDetail)">Delete</b-button>
-            </b-col>
-        </b-row>
+        <div class="row mt-3">
+            <div class="col">
+                <button type="button" class="btn m-2 btn-danger btn-sm" @click="onClickArticleDelete(articleDetail)">Delete</button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
 import _ from 'lodash'
-import slugify from 'slugify';
+import slugify from 'slugify'
 
-import MarkdownEditor from '@/components/MarkdownEditor';
+import VueTagsInput from '@wslyhbb/vue3-tags-input'
+import MarkdownEditor from '@/components/MarkdownEditor'
 
 export default {
     name: 'SoupArticleOpen',
     components: {
+        VueTagsInput,
         MarkdownEditor
     },
     data() {
         return {
-            valid_tags: [],
-            invalid_tags: [],
-            duplicate_tags: []
+            tag: ""
         }
     },
     computed: {
@@ -53,7 +58,7 @@ export default {
             return this.getArticleBySlug(this.$route.params.slug);
         },
         selectedTags() {
-            return this.articleDetail.tags.map(tag => tag.name);
+            return this.articleDetail.tags.map(tag => ({text: tag.name}));
         }
     },
     methods: {
@@ -61,6 +66,9 @@ export default {
             'deleteArticle',
             'updateArticle'
         ]),
+        onChangeTags(newTags) {
+            this.onInputArticleUpdate(newTags, this.articleDetail, 'tags');
+        },
         onClickArticleDelete(article) {
             var is_ok = confirm("Delete Article ?");
             if (is_ok) {
@@ -72,15 +80,10 @@ export default {
         onInputArticleUpdate(event, article, field) {
             let data = {};
             if (field === 'tags')
-                data[field] = event.map(tag => ({name: tag, slug: slugify(tag, {'replacement': '-', 'lower': true})}));
+                data[field] = event.map(tag => ({name: tag.text, slug: slugify(tag.text, {'replacement': '-', 'lower': true})}));
             else
                 data[field] = event;
             this.updateArticle({article, data});
-        },
-        onTagState(valid, invalid, duplicate) {
-            this.valid_tags = valid;
-            this.invalid_tags = invalid;
-            this.duplicate_tags = duplicate;
         }
     }
 }

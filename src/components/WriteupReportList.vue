@@ -1,61 +1,65 @@
 <template>
     <div>
-        <b-row class="mb-4">
-            <b-col>
-                <b-button to="/writeup/new">New</b-button>
-            </b-col>
-        </b-row>
+        <div class="row mb-4">
+            <div class="col">
+                <router-link class="btn btn-secondary" to="/writeup/new">New</router-link>
+            </div>
+        </div>
         <WriteupReportSearch @updated-search="onUpdatedSearch"/>
-        <b-row cols="1" cols-sm="2" cols-md="3" cols-lg="4" cols-xl="6">
-            <b-col v-for="reportDetail in reports"
-                   :key="reportDetail.id"
-                   :title="reportDetail.name"
-                   class="mb-4">
-                <b-card :sub-title="reportDetail.website.name + ' - ' + reportDetail.task_type_display"
-                        bg-variant="dark"
-                        text-variant="white">
-                    <template #header>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+            <div class="col mb-4"
+                    v-for="reportDetail in reports"
+                    :key="reportDetail.id"
+                    :title="reportDetail.name"
+                >
+                <div class="card text-white">
+                    <div class="card-header">
                         <div class="orange card-overflow" @click="onClickReportCard(reportDetail)">
-                            {{reportDetail.name}}
+                            {{ reportDetail.name }}
                         </div>
-                    </template>
-                    <b-card-text class="card-overflow">
-                        <small v-for="tagDetail in reportDetail.tags"
-                               :key="tagDetail.id"
-                               :title="tagDetail.name">
-                            #{{tagDetail.name}}
-                        </small>
-                        <small v-if="reportDetail.tags.length === 0">#No Tags</small>
-                    </b-card-text>
-                    <template #footer>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted mb-2">{{ reportDetail.website.name }} - {{ reportDetail.task_type_display }}</h6>
+                        <p class="card-text">
+                            <small v-for="tagDetail in reportDetail.tags"
+                                :key="tagDetail.id"
+                                :title="tagDetail.name">
+                                #{{ tagDetail.name }}
+                            </small>
+                            <small v-if="reportDetail.tags.length === 0">#No Tags</small>
+                        </p>
+                    </div>
+                    <div class="card-footer">
                         <small class="text-muted">Updated <timeago :datetime="reportDetail.write_date" :auto-update="60"></timeago></small>
-                    </template>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-pagination
-                    :value="selected_page"
-                    :total-rows="report_count"
-                    :per-page="report_per_page"
-                    align="right"
-                    @change="selectPage"
-                ></b-pagination>
-            </b-col>
-        </b-row>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <VueginateBootstrap
+                    :total-items="report_count"
+                    :current-page="selected_page"
+                    :items-per-page="report_per_page"
+                    :custom-styles="{ container: ['justify-content-end'] }"
+                    @page-change="selectPage"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
+import { VueginateBootstrap } from 'vueginate'
 
 import WriteupReportSearch from '@/components/WriteupReportSearch'
 
 export default {
     name: 'WriteupReportList',
     components: {
-        WriteupReportSearch
+        WriteupReportSearch,
+        VueginateBootstrap
     },
     data() {
         return {

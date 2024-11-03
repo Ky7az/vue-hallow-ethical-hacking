@@ -1,38 +1,38 @@
 <template>
     <div>
-        <b-button size="sm" @click="$bvModal.show('modal-login')" v-if="token == null">Sign In</b-button>
-        <b-button size="sm" @click="onClickLogout" v-if="token != null">Sign Out</b-button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-login" v-if="token == null">Sign In</button>
+        <button type="button" class="btn btn-secondary btn-sm" @click="onClickLogout" v-if="token != null">Sign Out</button>
 
-        <b-modal id="modal-login" hide-footer>
-            <div class="d-block text-center">
-                <b-form @submit.prevent="onSubmitLogin" v-if="token == null">
-                    <b-form-group label="Username" label-for="username">
-                        <b-form-input id="username" v-model="username" required autofocus></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="Password" label-for="password">
-                        <b-form-input id="password" v-model="password" type="password" required></b-form-input>
-                    </b-form-group>
-                    <b-button type="submit" variant="primary">Sign in</b-button>
-                </b-form>
-                <b-button type="submit" @click="onClickLogout" v-if="token != null">Sign Out</b-button>
-                <br/><br/>
-                <b-alert
-                    variant="danger"
-                    v-show="message"
-                    v-text="message"
-                    dismissible
-                    :show="dismiss_countdown"
-                    @dismissed="dismiss_countdown=0"
-                >
-                </b-alert>
+        <div id="modal-login" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn btn-close btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="onSubmitLogin" v-if="token == null">
+                            <div class="mb-3">
+                                <label for="username" class="col-form-label">Username</label>
+                                <input type="text" class="form-control form-control-sm" id="username" v-model="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="col-form-label">Password</label>
+                                <input type="password" class="form-control form-control-sm" id="password" v-model="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Sign in</button>
+                            <div class="alert alert-danger mt-3" role="alert" v-show="message" v-text="message"></div>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </b-modal>
+        </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
 
+import { Modal } from 'bootstrap'
 import { PROTO, API_HOST } from '../storage/service'
 
 export default {
@@ -40,11 +40,9 @@ export default {
     data() {
         return {
             token: localStorage.getItem('user-token') || null,
-            username: '',
-            password: '',
-            message: '',
-            dismiss_secs: 5,
-            dismiss_countdown: 0
+            username: "",
+            password: "",
+            message: ""
         }
     },
     methods: {
@@ -56,14 +54,13 @@ export default {
             .then(resp => {
                 this.token = resp.data.token;
                 localStorage.setItem('user-token', this.token);
-                this.$bvModal.hide('modal-login');
+                Modal.getInstance(document.getElementById('modal-login')).hide();
                 this.resetForm();
                 this.$router.go();
             })
             .catch(err => {
                 localStorage.removeItem('user-token');
                 this.message = 'Wrong username or password';
-                this.dismiss_countdown = this.dismiss_secs;
             });
         },
         onClickLogout() {

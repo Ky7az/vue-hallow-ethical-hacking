@@ -1,8 +1,8 @@
 <template>
     <div class="soup">
-        <b-container fluid>
+        <div class="container-fluid">
             <router-view></router-view>
-        </b-container>
+        </div>
     </div>
 </template>
 
