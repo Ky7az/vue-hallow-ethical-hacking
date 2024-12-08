@@ -10,10 +10,16 @@ const AxiosConfig = {
     headers: {
         'Authorization': "Token " + TokenService.getToken()
     }
+};
+
+let PROTO;
+if (import.meta.env.MODE == 'production') {
+    PROTO = 'https'
+} else {
+    PROTO = 'http'
 }
 
-export const PROTO = 'https'
 export const API_HOST = '127.0.0.1'
-
+export { PROTO }
 export { TokenService }
 export { AxiosConfig }

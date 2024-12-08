@@ -43,7 +43,6 @@
 
 <script>
 import Vuex from 'vuex'
-import _ from 'lodash'
 import slugify from 'slugify'
 
 import VueTagsInput from '@wslyhbb/vue3-tags-input'

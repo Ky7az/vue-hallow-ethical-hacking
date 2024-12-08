@@ -56,6 +56,7 @@
 
 <script>
 import Vuex from 'vuex'
+import { debounce } from 'lodash-es'
 
 import { TokenService } from '../storage/service'
 
@@ -111,7 +112,7 @@ export default {
             'loadTags',
             'updateSearchParams'
         ]),
-        onInputSearch: _.debounce(function(event, field) {
+        onInputSearch: debounce(function(event, field) {
             let search = {
                 search_text: this.search_text, 
                 search_tags: this.search_tags,
