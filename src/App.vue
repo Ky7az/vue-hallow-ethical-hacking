@@ -1,21 +1,21 @@
 <template>
     <div id="app">
         <div id="nav">
-            <Header/>
+            <TopNav />
         </div>
         <router-view></router-view>
     </div>
 </template>
 
 <script>
-import Header from '@/components/Header'
+import TopNav from '@/components/TopNav';
 
 export default {
     name: 'App',
     components: {
-        Header
-    }
-}
+        TopNav,
+    },
+};
 </script>
 
 <style>
@@ -54,8 +54,8 @@ export default {
     overflow: hidden;
 }
 
-a:link { 
-    text-decoration: none; 
+a:link {
+    text-decoration: none;
 }
 
 .vue-tags-input {

@@ -7,21 +7,19 @@
 </template>
 
 <script>
-import Vuex from 'vuex'
+import Vuex from 'vuex';
 
-import { TokenService } from '../storage/service'
+import { TokenService } from '../storage/service';
 
 export default {
-    name: 'Soup',
+    name: 'SoupView',
     methods: {
-        ...Vuex.mapActions('soup', [
-            'loadArticles'
-        ])
+        ...Vuex.mapActions('soup', ['loadArticles']),
     },
     created() {
         if (TokenService.getToken()) {
             this.loadArticles();
         }
-    }
-}
+    },
+};
 </script>

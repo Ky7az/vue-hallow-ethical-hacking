@@ -7,23 +7,20 @@
 </template>
 
 <script>
-import Vuex from 'vuex'
+import Vuex from 'vuex';
 
-import { TokenService } from '../storage/service'
+import { TokenService } from '../storage/service';
 
 export default {
-    name: 'Writeup',
+    name: 'WriteupView',
     methods: {
-        ...Vuex.mapActions('writeup', [
-            'loadWebsites',
-            'loadReports'
-        ])
+        ...Vuex.mapActions('writeup', ['loadWebsites', 'loadReports']),
     },
     created() {
         if (TokenService.getToken()) {
             this.loadWebsites();
             this.loadReports();
         }
-    }
-}
+    },
+};
 </script>

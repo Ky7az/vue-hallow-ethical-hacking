@@ -7,18 +7,18 @@
 </template>
 
 <script>
-import Vuex from 'vuex'
+import Vuex from 'vuex';
 
-import { TokenService } from '../storage/service'
+import { TokenService } from '../storage/service';
 
 export default {
-    name: 'Watch',
+    name: 'WatchView',
     methods: {
         ...Vuex.mapActions('watch', [
             'loadSources',
             'loadFeeds',
-            'loadContents'
-        ])
+            'loadContents',
+        ]),
     },
     created() {
         if (TokenService.getToken()) {
@@ -26,6 +26,6 @@ export default {
             this.loadFeeds();
             this.loadContents();
         }
-    }
-}
+    },
+};
 </script>

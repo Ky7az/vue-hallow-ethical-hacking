@@ -3,34 +3,43 @@
         <div class="col-6">
             <div class="btn-toolbar mb-3">
                 <div class="mx-auto btn-group">
-                    <button title="Preview" type="button" class="btn btn-outline-secondary" @click="onClickTogglePreview">
+                    <button
+                        title="Preview"
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        @click="onClickTogglePreview"
+                    >
                         <i class="bi-eye"></i>
                     </button>
                 </div>
             </div>
-            <div class="editor" v-html="processedMarkdown" v-if="preview == true"></div>
+            <div
+                class="editor"
+                v-html="processedMarkdown"
+                v-if="preview == true"
+            ></div>
             <slot class="editor" v-if="preview == false"></slot>
         </div>
     </div>
 </template>
 
 <script>
-import { nextTick } from 'vue'
-import { marked } from 'marked'
-import { gfmHeadingId, getHeadingList } from 'marked-gfm-heading-id'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/stackoverflow-dark.css'
+import { nextTick } from 'vue';
+import { marked } from 'marked';
+import { gfmHeadingId, getHeadingList } from 'marked-gfm-heading-id';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/stackoverflow-dark.css';
 
 marked.use({
-  pedantic: false,
-  gfm: true,
-  breaks: false
+    pedantic: false,
+    gfm: true,
+    breaks: false,
 });
 
-marked.use(gfmHeadingId({prefix: "heading-"}), {
-	hooks: {
-		postprocess(html) {
-			const headings = getHeadingList();
+marked.use(gfmHeadingId({ prefix: 'heading-' }), {
+    hooks: {
+        postprocess(html) {
+            const headings = getHeadingList();
             const stack = [document.createElement('ul')];
             for (const heading of headings) {
                 if (heading.level < stack.length) {
@@ -42,57 +51,63 @@ marked.use(gfmHeadingId({prefix: "heading-"}), {
                         stack.push(ul);
                     }
                 }
-                stack.at(-1).insertAdjacentHTML('beforeend', `<li><a href="javascript:document.getElementById('${heading.id}').scrollIntoView()">${heading.raw}</a></li>`);
+                stack
+                    .at(-1)
+                    .insertAdjacentHTML(
+                        'beforeend',
+                        `<li><a href="javascript:document.getElementById('${heading.id}').scrollIntoView()">${heading.raw}</a></li>`,
+                    );
             }
-            return `<div class="toc">${stack[0].outerHTML}</div><div class="editor">${html}</div>`
-		}
-	}
+            return `<div class="toc">${stack[0].outerHTML}</div><div class="editor">${html}</div>`;
+        },
+    },
 });
 
 export default {
     name: 'MarkdownEditor',
     props: {
-        markdown: String
+        markdown: String,
     },
     data() {
         return {
-            preview: true
-        }
+            preview: true,
+        };
     },
     computed: {
         mapKeys() {
             return {
-                "ctrl+e": this.onClickTogglePreview
+                'ctrl+e': this.onClickTogglePreview,
             };
         },
         processedMarkdown() {
             if (this.markdown) {
                 return marked.parse(this.markdown, {
                     highlight(md) {
-                        return hljs.highlightAuto(md).value
-                    }
+                        return hljs.highlightAuto(md).value;
+                    },
                 });
             }
-        }
+            return '';
+        },
     },
     methods: {
         async onClickTogglePreview() {
             this.preview = !this.preview;
             if (this.preview == false) {
                 await nextTick();
-	            document.getElementById('textarea-md-editor').focus();
+                document.getElementById('textarea-md-editor').focus();
             }
-        }
+        },
     },
     mounted() {
         hljs.highlightAll();
     },
     updated() {
-        nextTick(function() {
+        nextTick(function () {
             hljs.highlightAll();
-        })
-    }
-}
+        });
+    },
+};
 </script>
 
 <style scoped>
