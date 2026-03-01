@@ -146,7 +146,7 @@ export default {
     computed: {
         ...Vuex.mapState('writeup', ['websites']),
         optionsWebsites() {
-            var options = this.websites.map((x) => ({
+            let options = this.websites.map((x) => ({
                 value: x.id,
                 text: x.name,
             }));

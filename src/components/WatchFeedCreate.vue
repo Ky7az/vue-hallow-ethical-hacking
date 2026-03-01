@@ -104,13 +104,13 @@ export default {
     methods: {
         ...Vuex.mapActions('watch', ['loadFeeds', 'createFeed', 'deleteFeed']),
         onClickFeedDelete(feedDetail) {
-            var is_ok = confirm('Delete Feed ?');
+            let is_ok = confirm('Delete Feed ?');
             if (is_ok) {
                 this.deleteFeed(feedDetail);
             }
         },
         onClickFeedCreate() {
-            var data = {
+            let data = {
                 source_id: this.form_source,
                 tags: this.form_tags.map((tag) => ({
                     name: tag.text,

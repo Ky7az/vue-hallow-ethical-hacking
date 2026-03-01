@@ -101,7 +101,7 @@ export default {
             this.onInputReportUpdate(newTags, this.reportDetail, 'tags');
         },
         onClickReportDelete(report) {
-            var is_ok = confirm('Delete Report ?');
+            let is_ok = confirm('Delete Report ?');
             if (is_ok) {
                 this.deleteReport(report).then(() => {
                     this.$router.push('/writeup');

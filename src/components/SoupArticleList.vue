@@ -126,7 +126,7 @@ export default {
             this.$router.push(`/soup/art/${articleDetail.slug}`);
         },
         onClickArticleBookmark(articleDetail) {
-            var data = {
+            let data = {
                 bookmarked: !articleDetail.bookmarked,
             };
             this.updateArticle({ article: articleDetail, data });

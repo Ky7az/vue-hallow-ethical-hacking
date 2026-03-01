@@ -156,7 +156,7 @@ export default {
             }, 60000);
         },
         onClickContentView(contentDetail) {
-            var data = {
+            let data = {
                 viewed: true,
             };
             this.updateContent({ content: contentDetail, data }).then(() => {
@@ -164,7 +164,7 @@ export default {
             });
         },
         onClickContentBookmark(contentDetail) {
-            var data = {
+            let data = {
                 bookmarked: !contentDetail.bookmarked,
             };
             this.updateContent({ content: contentDetail, data }).then(() => {

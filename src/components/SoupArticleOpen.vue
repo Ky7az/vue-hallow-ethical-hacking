@@ -85,7 +85,7 @@ export default {
             this.onInputArticleUpdate(newTags, this.articleDetail, 'tags');
         },
         onClickArticleDelete(article) {
-            var is_ok = confirm('Delete Article ?');
+            let is_ok = confirm('Delete Article ?');
             if (is_ok) {
                 this.deleteArticle(article).then(() => {
                     this.$router.push('/soup');
