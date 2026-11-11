@@ -2,6 +2,7 @@
     "name": "vue-hallow-ethical-hacking",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "vite --host",
         "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
@@ -24,7 +25,7 @@
         "strip-ansi": "7.2.0",
         "v-hotkey3": "0.1.4",
         "vue": "3.5.44",
-        "vue-router": "4.5.0",
+        "vue-router": "5.4.0",
         "vue-timeago3": "2.3.2",
         "vueginate": "1.1.2",
         "vuex": "4.1.0"
@@ -34,7 +35,7 @@
         "@types/bootstrap": "5.2.11",
         "@types/lodash-es": "4.17.12",
         "@types/node": "26.6.5",
-        "@vitejs/plugin-vue": "5.2.1",
+        "@vitejs/plugin-vue": "6.0.10",
         "@vue/tsconfig": "0.9.1",
         "eslint": "9.39.4",
         "eslint-config-prettier": "9.1.0",
@@ -44,7 +45,7 @@
         "prettier": "3.9.10",
         "typescript": "6.0.3",
         "typescript-eslint": "8.72.1",
-        "vite": "6.0.3",
+        "vite": "8.3.5",
         "vue-tsc": "3.3.13"
     },
     "browserslist": [
