@@ -14,7 +14,10 @@ export const AxiosConfig: AxiosRequestConfig = {
     },
 };
 
+// API is served on the same origin as the front (nginx) unless overridden
+// (e.g. VITE_API_HOST / VITE_API_PROTO for the Vite dev server).
 export const PROTO: string =
-    import.meta.env.MODE === 'production' ? 'https' : 'http';
+    import.meta.env.VITE_API_PROTO || window.location.protocol.replace(':', '');
 
-export const API_HOST = '127.0.0.1';
+export const API_HOST: string =
+    import.meta.env.VITE_API_HOST || window.location.host;
