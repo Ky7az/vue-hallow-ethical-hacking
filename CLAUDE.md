@@ -47,6 +47,7 @@ Written in **TypeScript** (`strict`). All components use `<script setup lang="ts
 
 - Store access: `useStore()` from `@/store` (typed `Store<RootState>` via `InjectionKey`). `store.getters[...]` is untyped — cast the getter to its function signature at the call site.
 - Shared API types live in `src/types/index.ts`; mirror the Django serializer field names exactly (dates are `create_date` / `write_date`). Untyped third-party libs are shimmed in `src/types/shims.d.ts`.
+- No global side effects at the top level of `<script setup>` (e.g. `marked.use(...)`): that code runs on every component instance. Put one-time setup in a module under `src/utils/` (see `renderMarkdown` in `@/utils/markdown`).
 - Read form fields with `formValue(form, name)` from `@/utils/form`, not `form.<name>` (collides with built-in `HTMLFormElement` properties).
 
 - **List components**: Vueginate for pagination, AbortController to cancel in-flight requests on new searches, emit updated-search events upward
