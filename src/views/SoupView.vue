@@ -6,20 +6,13 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { useStore } from '@/store';
+import { TokenService } from '@/storage/service';
 
-import { TokenService } from '../storage/service';
+const store = useStore();
 
-export default {
-    name: 'SoupView',
-    methods: {
-        ...Vuex.mapActions('soup', ['loadArticles']),
-    },
-    created() {
-        if (TokenService.getToken()) {
-            this.loadArticles();
-        }
-    },
-};
+if (TokenService.getToken()) {
+    store.dispatch('soup/loadArticles');
+}
 </script>

@@ -11,7 +11,10 @@
                         class="form-control form-control-sm"
                         :value="search_text"
                         @input="
-                            onInputSearch($event.target.value, 'search_text')
+                            onInputSearch(
+                                ($event.target as HTMLInputElement).value,
+                                'search_text',
+                            )
                         "
                     />
                 </div>
@@ -98,78 +101,65 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
 import { debounce } from 'lodash-es';
+import TagSearch from '@/components/TagSearch.vue';
+import { useStore } from '@/store';
+import { TokenService } from '@/storage/service';
 
-import { TokenService } from '../storage/service';
+const store = useStore();
+const emit = defineEmits<{ 'updated-search': [] }>();
 
-import TagSearch from '@/components/TagSearch';
+const optionsTaskTypes = [
+    { value: 'bugbounty', text: 'Bug Bounty' },
+    { value: 'ctf', text: 'Capture The Flag' },
+];
+const optionsTaskPlatforms = [
+    { value: 'linux', text: 'Linux' },
+    { value: 'windows', text: 'Windows' },
+];
+const checked_websites = ref<string[]>([]);
+const checked_task_types = ref<string[]>([]);
+const checked_task_platforms = ref<string[]>([]);
 
-export default {
-    name: 'WriteupReportSearch',
-    components: {
-        TagSearch,
-    },
-    data() {
-        return {
-            optionsTaskTypes: [
-                { value: 'bugbounty', text: 'Bug Bounty' },
-                { value: 'ctf', text: 'Capture The Flag' },
-            ],
-            optionsTaskPlatforms: [
-                { value: 'linux', text: 'Linux' },
-                { value: 'windows', text: 'Windows' },
-            ],
-            checked_websites: [],
-            checked_task_types: [],
-            checked_task_platforms: [],
-        };
-    },
-    watch: {
-        checked_websites: function (val) {
-            this.onInputSearch(val, 'search_websites');
-        },
-        checked_task_types: function (val) {
-            this.onInputSearch(val, 'search_task_types');
-        },
-        checked_task_platforms: function (val) {
-            this.onInputSearch(val, 'search_task_platforms');
-        },
-    },
-    computed: {
-        ...Vuex.mapState('writeup', [
-            'tags',
-            'websites',
-            'search_text',
-            'search_tags',
-            'search_websites',
-            'search_task_types',
-            'search_task_platforms',
-        ]),
-        optionsWebsites() {
-            return this.websites.map((x) => ({ value: x.slug, text: x.name }));
-        },
-    },
-    methods: {
-        ...Vuex.mapActions('writeup', ['loadTags', 'updateSearchParams']),
-        onInputSearch: debounce(function (event, field) {
-            let search = {
-                search_text: this.search_text,
-                search_tags: this.search_tags,
-                search_websites: this.search_websites,
-                search_task_types: this.search_task_types,
-                search_task_platforms: this.search_task_platforms,
-            };
-            search[field] = event;
-            this.updateSearchParams(search);
-            this.$emit('updated-search');
-        }, 300),
-    },
-    created() {
-        if (TokenService.getToken()) {
-            this.loadTags();
-        }
-    },
-};
+const tags = computed(() => store.state.writeup.tags);
+const websites = computed(() => store.state.writeup.websites);
+const search_text = computed(() => store.state.writeup.search_text);
+const search_tags = computed(() => store.state.writeup.search_tags);
+const search_websites = computed(() => store.state.writeup.search_websites);
+const search_task_types = computed(() => store.state.writeup.search_task_types);
+const search_task_platforms = computed(
+    () => store.state.writeup.search_task_platforms,
+);
+
+const optionsWebsites = computed(() =>
+    websites.value.map((x) => ({
+        value: x.slug ?? String(x.id),
+        text: x.name,
+    })),
+);
+
+const onInputSearch = debounce((value: unknown, field: string) => {
+    const search: Record<string, unknown> = {
+        search_text: search_text.value,
+        search_tags: search_tags.value,
+        search_websites: search_websites.value,
+        search_task_types: search_task_types.value,
+        search_task_platforms: search_task_platforms.value,
+    };
+    search[field] = value;
+    store.dispatch('writeup/updateSearchParams', search);
+    emit('updated-search');
+}, 300);
+
+watch(checked_websites, (val) => onInputSearch(val, 'search_websites'));
+watch(checked_task_types, (val) => onInputSearch(val, 'search_task_types'));
+watch(checked_task_platforms, (val) =>
+    onInputSearch(val, 'search_task_platforms'),
+);
+
+if (TokenService.getToken()) {
+    store.dispatch('writeup/loadTags');
+}
 </script>

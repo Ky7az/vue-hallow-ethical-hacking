@@ -1,7 +1,11 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 import { createApp, h } from 'vue';
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import store, { key } from './store';
 import VueHotkey from 'v-hotkey3';
 import VueTimeago from 'vue-timeago3';
 
@@ -10,7 +14,7 @@ const app = createApp({
 });
 
 app.use(router);
-app.use(store);
+app.use(store, key);
 app.use(VueHotkey);
 
 const timeagoOptions = {
@@ -19,9 +23,5 @@ const timeagoOptions = {
     },
 };
 app.use(VueTimeago, timeagoOptions);
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 
 app.mount('#app');

@@ -31,8 +31,8 @@
                 wrap="soft"
                 @change="
                     onInputArticleUpdate(
-                        $event.target.value,
-                        articleDetail,
+                        ($event.target as HTMLTextAreaElement).value,
+                        articleDetail!,
                         'content',
                     )
                 "
@@ -52,56 +52,53 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import slugify from 'slugify';
-
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
-import MarkdownEditor from '@/components/MarkdownEditor';
+import MarkdownEditor from '@/components/MarkdownEditor.vue';
+import { useStore } from '@/store';
+import type { Article, TagInputItem } from '@/types';
 
-export default {
-    name: 'SoupArticleOpen',
-    components: {
-        VueTagsInput,
-        MarkdownEditor,
-    },
-    data() {
-        return {
-            tag: '',
-        };
-    },
-    computed: {
-        ...Vuex.mapGetters('soup', ['getArticleBySlug']),
-        articleDetail() {
-            return this.getArticleBySlug(this.$route.params.slug);
-        },
-        selectedTags() {
-            return this.articleDetail.tags.map((tag) => ({ text: tag.name }));
-        },
-    },
-    methods: {
-        ...Vuex.mapActions('soup', ['deleteArticle', 'updateArticle']),
-        onChangeTags(newTags) {
-            this.onInputArticleUpdate(newTags, this.articleDetail, 'tags');
-        },
-        onClickArticleDelete(article) {
-            let is_ok = confirm('Delete Article ?');
-            if (is_ok) {
-                this.deleteArticle(article).then(() => {
-                    this.$router.push('/soup');
-                });
-            }
-        },
-        onInputArticleUpdate(event, article, field) {
-            let data = {};
-            if (field === 'tags')
-                data[field] = event.map((tag) => ({
-                    name: tag.text,
-                    slug: slugify(tag.text, { replacement: '-', lower: true }),
-                }));
-            else data[field] = event;
-            this.updateArticle({ article, data });
-        },
-    },
-};
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
+
+const tag = ref('');
+
+const articleDetail = computed(() =>
+    (
+        store.getters['soup/getArticleBySlug'] as (
+            slug: string,
+        ) => Article | undefined
+    )(route.params.slug as string),
+);
+
+const selectedTags = computed(
+    () => articleDetail.value?.tags.map((t) => ({ text: t.name })) ?? [],
+);
+
+function onChangeTags(newTags: TagInputItem[]) {
+    onInputArticleUpdate(newTags, articleDetail.value!, 'tags');
+}
+
+function onClickArticleDelete(article: Article) {
+    if (confirm('Delete Article ?')) {
+        store.dispatch('soup/deleteArticle', article).then(() => {
+            router.push('/soup');
+        });
+    }
+}
+
+function onInputArticleUpdate(event: unknown, article: Article, field: string) {
+    const data: Record<string, unknown> = {};
+    if (field === 'tags')
+        data[field] = (event as TagInputItem[]).map((t) => ({
+            name: t.text,
+            slug: slugify(t.text, { replacement: '-', lower: true }),
+        }));
+    else data[field] = event;
+    store.dispatch('soup/updateArticle', { article, data });
+}
 </script>

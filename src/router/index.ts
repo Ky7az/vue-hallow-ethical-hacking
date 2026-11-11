@@ -1,5 +1,9 @@
 import { nextTick } from 'vue';
-import { createRouter, createWebHashHistory } from 'vue-router';
+import {
+    createRouter,
+    createWebHashHistory,
+    type RouteRecordRaw,
+} from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
 import SoupView from '@/views/SoupView.vue';
 import WatchView from '@/views/WatchView.vue';
@@ -17,14 +21,18 @@ import WriteupReportList from '@/components/WriteupReportList.vue';
 import WriteupReportCreate from '@/components/WriteupReportCreate.vue';
 import WriteupReportOpen from '@/components/WriteupReportOpen.vue';
 
-const routes = [
+declare module 'vue-router' {
+    interface RouteMeta {
+        title?: string;
+    }
+}
+
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'home',
         component: HomeView,
-        meta: {
-            title: 'Hallow',
-        },
+        meta: { title: 'Hallow' },
     },
     {
         path: '/soup',
@@ -35,25 +43,19 @@ const routes = [
                 name: 'SoupArticleList',
                 path: '',
                 component: SoupArticleList,
-                meta: {
-                    title: 'Soup - List Articles',
-                },
+                meta: { title: 'Soup - List Articles' },
             },
             {
                 name: 'SoupArticleCreate',
                 path: 'new',
                 component: SoupArticleCreate,
-                meta: {
-                    title: 'Soup - New Article',
-                },
+                meta: { title: 'Soup - New Article' },
             },
             {
                 name: 'SoupArticleOpen',
                 path: 'art/:slug',
                 component: SoupArticleOpen,
-                meta: {
-                    title: 'Soup - Open Article',
-                },
+                meta: { title: 'Soup - Open Article' },
             },
         ],
     },
@@ -66,51 +68,39 @@ const routes = [
                 name: 'WatchContentList',
                 path: '',
                 component: WatchContentList,
-                meta: {
-                    title: 'Watch - List Contents',
-                },
+                meta: { title: 'Watch - List Contents' },
             },
             {
                 name: 'WatchFeedCreate',
                 path: 'new',
                 component: WatchFeedCreate,
-                meta: {
-                    title: 'Watch - Create Feed',
-                },
+                meta: { title: 'Watch - Create Feed' },
             },
         ],
     },
     {
         path: '/pentest',
         name: 'pentest',
-        meta: {
-            title: 'Pentest',
-        },
+        meta: { title: 'Pentest' },
         component: PentestView,
         children: [
             {
                 name: 'PentestTaskList',
                 path: '',
                 component: PentestTaskList,
-                meta: {
-                    title: 'Pentest - List Tasks',
-                },
+                meta: { title: 'Pentest - List Tasks' },
             },
             {
                 name: 'PentestTaskCreate',
                 path: 'new',
                 component: PentestTaskCreate,
-                meta: {
-                    title: 'Pentest - Create Task',
-                },
+                meta: { title: 'Pentest - Create Task' },
             },
             {
                 name: 'PentestTaskOpen',
                 path: 'tsk/:id',
                 component: PentestTaskOpen,
-                meta: {
-                    title: 'Pentest - Open Task',
-                },
+                meta: { title: 'Pentest - Open Task' },
             },
         ],
     },
@@ -123,25 +113,19 @@ const routes = [
                 name: 'WriteupReportList',
                 path: '',
                 component: WriteupReportList,
-                meta: {
-                    title: 'Writeup - List Reports',
-                },
+                meta: { title: 'Writeup - List Reports' },
             },
             {
                 name: 'WriteupReportCreate',
                 path: 'new',
                 component: WriteupReportCreate,
-                meta: {
-                    title: 'Writeup - New Report',
-                },
+                meta: { title: 'Writeup - New Report' },
             },
             {
                 name: 'WriteupReportOpen',
                 path: 'rpt/:slug',
                 component: WriteupReportOpen,
-                meta: {
-                    title: 'Writeup - Open Report',
-                },
+                meta: { title: 'Writeup - Open Report' },
             },
         ],
     },
@@ -156,10 +140,9 @@ const router = createRouter({
     routes,
 });
 
-// eslint-disable-next-line no-unused-vars
-router.afterEach((to, from) => {
+router.afterEach((to) => {
     nextTick(() => {
-        document.title = to.meta.title || 'Hallow';
+        document.title = to.meta.title ?? 'Hallow';
     });
 });
 

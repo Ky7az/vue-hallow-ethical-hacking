@@ -23,36 +23,32 @@
     </div>
 </template>
 
-<script>
-import { nextTick } from 'vue';
+<script setup lang="ts">
+import { ref, computed, onMounted, onUpdated, nextTick } from 'vue';
 import { marked } from 'marked';
 import { gfmHeadingId, getHeadingList } from 'marked-gfm-heading-id';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/stackoverflow-dark.css';
 
-marked.use({
-    pedantic: false,
-    gfm: true,
-    breaks: false,
-});
+marked.use({ pedantic: false, gfm: true, breaks: false });
 
 marked.use(gfmHeadingId({ prefix: 'heading-' }), {
     hooks: {
-        postprocess(html) {
+        postprocess(html: string) {
             const headings = getHeadingList();
-            const stack = [document.createElement('ul')];
+            const stack: HTMLUListElement[] = [document.createElement('ul')];
             for (const heading of headings) {
                 if (heading.level < stack.length) {
                     stack.length = heading.level;
                 } else {
                     while (heading.level > stack.length) {
                         const ul = document.createElement('ul');
-                        stack.at(-1).append(ul);
+                        stack.at(-1)!.append(ul);
                         stack.push(ul);
                     }
                 }
                 stack
-                    .at(-1)
+                    .at(-1)!
                     .insertAdjacentHTML(
                         'beforeend',
                         `<li><a href="javascript:document.getElementById('${heading.id}').scrollIntoView()">${heading.raw}</a></li>`,
@@ -63,51 +59,35 @@ marked.use(gfmHeadingId({ prefix: 'heading-' }), {
     },
 });
 
-export default {
-    name: 'MarkdownEditor',
-    props: {
-        markdown: String,
-    },
-    data() {
-        return {
-            preview: true,
-        };
-    },
-    computed: {
-        mapKeys() {
-            return {
-                'ctrl+e': this.onClickTogglePreview,
-            };
-        },
-        processedMarkdown() {
-            if (this.markdown) {
-                return marked.parse(this.markdown, {
-                    highlight(md) {
-                        return hljs.highlightAuto(md).value;
-                    },
-                });
-            }
-            return '';
-        },
-    },
-    methods: {
-        async onClickTogglePreview() {
-            this.preview = !this.preview;
-            if (this.preview == false) {
-                await nextTick();
-                document.getElementById('textarea-md-editor').focus();
-            }
-        },
-    },
-    mounted() {
+const props = defineProps<{ markdown?: string }>();
+const preview = ref(true);
+
+const mapKeys = computed(() => ({ 'ctrl+e': onClickTogglePreview }));
+
+const processedMarkdown = computed(() => {
+    if (props.markdown) {
+        return marked.parse(props.markdown) as string;
+    }
+    return '';
+});
+
+async function onClickTogglePreview() {
+    preview.value = !preview.value;
+    if (!preview.value) {
+        await nextTick();
+        document.getElementById('textarea-md-editor')?.focus();
+    }
+}
+
+onMounted(() => {
+    hljs.highlightAll();
+});
+
+onUpdated(() => {
+    nextTick(() => {
         hljs.highlightAll();
-    },
-    updated() {
-        nextTick(function () {
-            hljs.highlightAll();
-        });
-    },
-};
+    });
+});
 </script>
 
 <style scoped>

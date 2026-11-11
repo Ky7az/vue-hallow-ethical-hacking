@@ -40,13 +40,6 @@
     </nav>
 </template>
 
-<script>
-import LoginModal from '@/components/LoginModal';
-
-export default {
-    name: 'TopNav',
-    components: {
-        LoginModal,
-    },
-};
+<script setup lang="ts">
+import LoginModal from '@/components/LoginModal.vue';
 </script>

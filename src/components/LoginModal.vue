@@ -78,54 +78,48 @@
     </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue';
 import axios from 'axios';
-
 import { Modal } from 'bootstrap';
-import { PROTO, API_HOST } from '../storage/service';
+import { useRouter } from 'vue-router';
+import { PROTO, API_HOST } from '@/storage/service';
 
-export default {
-    name: 'LoginModal',
-    data() {
-        return {
-            token: localStorage.getItem('user-token') || null,
-            username: '',
-            password: '',
-            message: '',
-        };
-    },
-    methods: {
-        onSubmitLogin() {
-            axios
-                .post(`${PROTO}://${API_HOST}/auth/`, {
-                    username: this.username,
-                    password: this.password,
-                })
-                .then((resp) => {
-                    this.token = resp.data.token;
-                    localStorage.setItem('user-token', this.token);
-                    Modal.getInstance(
-                        document.getElementById('modal-login'),
-                    ).hide();
-                    this.resetForm();
-                    this.$router.go();
-                })
-                .catch(() => {
-                    localStorage.removeItem('user-token');
-                    this.message = 'Wrong username or password';
-                });
-        },
-        onClickLogout() {
+const router = useRouter();
+const token = ref<string | null>(localStorage.getItem('user-token'));
+const username = ref('');
+const password = ref('');
+const message = ref('');
+
+function onSubmitLogin() {
+    axios
+        .post(`${PROTO}://${API_HOST}/auth/`, {
+            username: username.value,
+            password: password.value,
+        })
+        .then((resp) => {
+            token.value = resp.data.token as string;
+            localStorage.setItem('user-token', token.value);
+            Modal.getInstance(document.getElementById('modal-login')!)?.hide();
+            resetForm();
+            router.go(0);
+        })
+        .catch(() => {
             localStorage.removeItem('user-token');
-            this.token = null;
-            this.resetForm();
-            this.$router.go();
-        },
-        resetForm() {
-            this.username = '';
-            this.password = '';
-            this.message = '';
-        },
-    },
-};
+            message.value = 'Wrong username or password';
+        });
+}
+
+function onClickLogout() {
+    localStorage.removeItem('user-token');
+    token.value = null;
+    resetForm();
+    router.go(0);
+}
+
+function resetForm() {
+    username.value = '';
+    password.value = '';
+    message.value = '';
+}
 </script>

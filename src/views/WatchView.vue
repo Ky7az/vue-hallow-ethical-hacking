@@ -6,26 +6,15 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { useStore } from '@/store';
+import { TokenService } from '@/storage/service';
 
-import { TokenService } from '../storage/service';
+const store = useStore();
 
-export default {
-    name: 'WatchView',
-    methods: {
-        ...Vuex.mapActions('watch', [
-            'loadSources',
-            'loadFeeds',
-            'loadContents',
-        ]),
-    },
-    created() {
-        if (TokenService.getToken()) {
-            this.loadSources();
-            this.loadFeeds();
-            this.loadContents();
-        }
-    },
-};
+if (TokenService.getToken()) {
+    store.dispatch('watch/loadSources');
+    store.dispatch('watch/loadFeeds');
+    store.dispatch('watch/loadContents');
+}
 </script>

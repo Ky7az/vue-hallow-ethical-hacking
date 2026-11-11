@@ -1,9 +1,28 @@
 import axios from 'axios';
 import slugify from 'slugify';
-
+import type { Module, ActionContext } from 'vuex';
+import type { RootState } from '../index';
 import { PROTO, API_HOST, AxiosConfig } from '../../storage/service';
+import type { SoupTag, Article, TagInputItem } from '../../types';
 
-const state = {
+export interface SoupState {
+    tags: SoupTag[];
+    articles: Article[];
+    article_count: number;
+    selected_page: number;
+    search_text: string | null;
+    search_tags: TagInputItem[];
+    search_bookmarked: boolean | null;
+    search_params: string | null;
+}
+
+interface SearchPayload {
+    search_text: string | null;
+    search_tags: TagInputItem[];
+    search_bookmarked: boolean | null;
+}
+
+const state: SoupState = {
     tags: [],
     articles: [],
     article_count: 0,
@@ -15,22 +34,23 @@ const state = {
 };
 
 const getters = {
-    getArticleBySlug: (state) => (slug) =>
+    getArticleBySlug: (state: SoupState) => (slug: string) =>
         state.articles.find((article) => article.slug === slug),
 };
 
 const actions = {
-    // Tags
-    async loadTags({ commit }) {
+    async loadTags({ commit }: ActionContext<SoupState, RootState>) {
         const res = await axios.get(
             `${PROTO}://${API_HOST}/api/soup/tags/`,
             AxiosConfig,
         );
         commit('SET_TAGS', res.data);
     },
-    // Articles
-    async loadArticles({ commit }, signal) {
-        AxiosConfig['signal'] = signal;
+    async loadArticles(
+        { commit }: ActionContext<SoupState, RootState>,
+        signal: AbortSignal,
+    ) {
+        AxiosConfig.signal = signal;
         let req_params = `?page=${state.selected_page}`;
         if (state.search_params) req_params += `&${state.search_params}`;
         const res = await axios.get(
@@ -40,71 +60,80 @@ const actions = {
         commit('SET_ARTICLES', res.data.results);
         commit('SET_ARTICLE_COUNT', res.data.count);
     },
-    async createArticle({ commit }, data) {
+    async createArticle(
+        { commit }: ActionContext<SoupState, RootState>,
+        data: Partial<Article>,
+    ) {
         const res = await axios.post(
             `${PROTO}://${API_HOST}/api/soup/articles/`,
             data,
             AxiosConfig,
         );
         commit('CREATE_ARTICLE', res.data);
-        return res.data;
+        return res.data as Article;
     },
-    async updateArticle({ commit }, { article, data }) {
+    async updateArticle(
+        { commit }: ActionContext<SoupState, RootState>,
+        { article, data }: { article: Article; data: Partial<Article> },
+    ) {
         const res = await axios.patch(
             `${PROTO}://${API_HOST}/api/soup/articles/${article.slug}/`,
             data,
             AxiosConfig,
         );
         commit('UPDATE_ARTICLE', res.data);
-        return res.data;
+        return res.data as Article;
     },
-    async deleteArticle({ commit }, article) {
+    async deleteArticle(
+        { commit }: ActionContext<SoupState, RootState>,
+        article: Article,
+    ) {
         await axios.delete(
             `${PROTO}://${API_HOST}/api/soup/articles/${article.slug}/`,
             AxiosConfig,
         );
         commit('DELETE_ARTICLE', article);
     },
-    // Selected Page
-    updateSelectedPage({ commit }, page) {
+    updateSelectedPage(
+        { commit }: ActionContext<SoupState, RootState>,
+        page: number,
+    ) {
         commit('SET_SELECTED_PAGE', page);
     },
-    // Search Params
-    updateSearchParams({ commit }, search) {
+    updateSearchParams(
+        { commit }: ActionContext<SoupState, RootState>,
+        search: SearchPayload,
+    ) {
         commit('SET_SEARCH_PARAMS', search);
     },
 };
 
 const mutations = {
-    // Tags
-    SET_TAGS(state, tags) {
+    SET_TAGS(state: SoupState, tags: SoupTag[]) {
         state.tags = tags;
     },
-    // Articles
-    SET_ARTICLES(state, articles) {
+    SET_ARTICLES(state: SoupState, articles: Article[]) {
         state.articles = articles;
     },
-    SET_ARTICLE_COUNT(state, count) {
+    SET_ARTICLE_COUNT(state: SoupState, count: number) {
         state.article_count = count;
     },
-    CREATE_ARTICLE(state, article) {
+    CREATE_ARTICLE(state: SoupState, article: Article) {
         state.articles.unshift(article);
     },
-    UPDATE_ARTICLE(state, article) {
+    UPDATE_ARTICLE(state: SoupState, article: Article) {
         const index = state.articles.findIndex((a) => a.slug === article.slug);
         state.articles.splice(index, 1);
         state.articles.unshift(article);
     },
-    DELETE_ARTICLE(state, article) {
+    DELETE_ARTICLE(state: SoupState, article: Article) {
         state.articles = state.articles.filter((a) => a.slug !== article.slug);
     },
-    // Selected Page
-    SET_SELECTED_PAGE(state, page) {
+    SET_SELECTED_PAGE(state: SoupState, page: number) {
         state.selected_page = page || 1;
     },
-    // Search Params
-    SET_SEARCH_PARAMS(state, search) {
-        let params = [];
+    SET_SEARCH_PARAMS(state: SoupState, search: SearchPayload) {
+        const params: string[] = [];
         if (search.search_text)
             params.push('name_or_content=' + search.search_text);
         state.search_text = search.search_text;
@@ -123,10 +152,12 @@ const mutations = {
     },
 };
 
-export default {
+const soup: Module<SoupState, RootState> = {
     namespaced: true,
     state,
     getters,
     actions,
     mutations,
 };
+
+export default soup;

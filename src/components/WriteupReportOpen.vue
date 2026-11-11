@@ -14,7 +14,7 @@
         </div>
         <div class="row mb-3 justify-content-center">
             <div class="col-2">
-                {{ reportDetail.website.name }} -
+                {{ reportDetail.website && reportDetail.website.name }} -
                 {{ reportDetail.task_type_display }}
                 {{
                     (reportDetail.task_platform_display &&
@@ -47,8 +47,8 @@
                 wrap="soft"
                 @change="
                     onInputReportUpdate(
-                        $event.target.value,
-                        reportDetail,
+                        ($event.target as HTMLTextAreaElement).value,
+                        reportDetail!,
                         'content',
                     )
                 "
@@ -68,56 +68,53 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import slugify from 'slugify';
-
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
-import MarkdownEditor from '@/components/MarkdownEditor';
+import MarkdownEditor from '@/components/MarkdownEditor.vue';
+import { useStore } from '@/store';
+import type { Report, TagInputItem } from '@/types';
 
-export default {
-    name: 'WriteupReportOpen',
-    components: {
-        VueTagsInput,
-        MarkdownEditor,
-    },
-    data() {
-        return {
-            tag: '',
-        };
-    },
-    computed: {
-        ...Vuex.mapGetters('writeup', ['getReportBySlug']),
-        reportDetail() {
-            return this.getReportBySlug(this.$route.params.slug);
-        },
-        selectedTags() {
-            return this.reportDetail.tags.map((tag) => tag.name);
-        },
-    },
-    methods: {
-        ...Vuex.mapActions('writeup', ['deleteReport', 'updateReport']),
-        onChangeTags(newTags) {
-            this.onInputReportUpdate(newTags, this.reportDetail, 'tags');
-        },
-        onClickReportDelete(report) {
-            let is_ok = confirm('Delete Report ?');
-            if (is_ok) {
-                this.deleteReport(report).then(() => {
-                    this.$router.push('/writeup');
-                });
-            }
-        },
-        onInputReportUpdate(event, report, field) {
-            let data = {};
-            if (field === 'tags')
-                data[field] = event.map((tag) => ({
-                    name: tag.text,
-                    slug: slugify(tag.text, { replacement: '-', lower: true }),
-                }));
-            else data[field] = event;
-            this.updateReport({ report, data });
-        },
-    },
-};
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
+
+const tag = ref('');
+
+const reportDetail = computed(() =>
+    (
+        store.getters['writeup/getReportBySlug'] as (
+            slug: string,
+        ) => Report | undefined
+    )(route.params.slug as string),
+);
+
+const selectedTags = computed(
+    () => reportDetail.value?.tags.map((t) => t.name) ?? [],
+);
+
+function onChangeTags(newTags: TagInputItem[]) {
+    onInputReportUpdate(newTags, reportDetail.value!, 'tags');
+}
+
+function onClickReportDelete(report: Report) {
+    if (confirm('Delete Report ?')) {
+        store.dispatch('writeup/deleteReport', report).then(() => {
+            router.push('/writeup');
+        });
+    }
+}
+
+function onInputReportUpdate(event: unknown, report: Report, field: string) {
+    const data: Record<string, unknown> = {};
+    if (field === 'tags')
+        data[field] = (event as TagInputItem[]).map((t) => ({
+            name: t.text,
+            slug: slugify(t.text, { replacement: '-', lower: true }),
+        }));
+    else data[field] = event;
+    store.dispatch('writeup/updateReport', { report, data });
+}
 </script>

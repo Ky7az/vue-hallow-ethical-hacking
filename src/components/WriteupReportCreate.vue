@@ -29,7 +29,7 @@
                                 <option
                                     v-for="option in optionsWebsites"
                                     :value="option.value"
-                                    :key="option.value"
+                                    :key="option.value ?? ''"
                                 >
                                     {{ option.text }}
                                 </option>
@@ -108,76 +108,71 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import slugify from 'slugify';
-
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
-import MarkdownEditor from '@/components/MarkdownEditor';
+import MarkdownEditor from '@/components/MarkdownEditor.vue';
+import { useStore } from '@/store';
+import type { TagInputItem, Report } from '@/types';
 
-export default {
-    name: 'WriteupReportCreate',
-    components: {
-        VueTagsInput,
-        MarkdownEditor,
-    },
-    data() {
-        return {
-            name: null,
-            tag: '',
-            selected_tags: [],
-            website: null,
-            optionsTaskTypes: [
-                { value: '', text: 'Task Type', disabled: true },
-                { value: 'bugbounty', text: 'Bug Bounty' },
-                { value: 'ctf', text: 'Capture The Flag' },
-            ],
-            optionsTaskPlatforms: [
-                { value: '', text: 'Task Platform', disabled: true },
-                { value: 'linux', text: 'Linux' },
-                { value: 'windows', text: 'Windows' },
-            ],
-            task_type: '',
-            task_platform: '',
-            task_url: '',
-            content: '',
-        };
-    },
-    computed: {
-        ...Vuex.mapState('writeup', ['websites']),
-        optionsWebsites() {
-            let options = this.websites.map((x) => ({
-                value: x.id,
-                text: x.name,
-            }));
-            options.unshift({ value: null, text: 'Website', disabled: true });
-            return options;
-        },
-    },
-    methods: {
-        ...Vuex.mapActions('writeup', ['createReport']),
-        onChangeTags(newTags) {
-            this.selected_tags = newTags;
-        },
-        submitForm() {
-            let slug = slugify(this.name, { replacement: '-', lower: true });
-            let data = {
-                name: this.name,
-                slug: slug,
-                website_id: this.website,
-                task_type: this.task_type,
-                task_platform: this.task_platform,
-                task_url: this.task_url,
-                content: this.content,
-                tags: this.selected_tags.map((tag) => ({
-                    name: tag.text,
-                    slug: slugify(tag.text, { replacement: '-', lower: true }),
-                })),
-            };
-            this.createReport(data).then((res) => {
-                this.$router.push(`/writeup/rpt/${res.slug}`);
-            });
-        },
-    },
-};
+const store = useStore();
+const router = useRouter();
+
+const name = ref<string | null>(null);
+const tag = ref('');
+const selected_tags = ref<TagInputItem[]>([]);
+const website = ref<number | null>(null);
+const task_type = ref('');
+const task_platform = ref('');
+const task_url = ref('');
+const content = ref('');
+
+const optionsTaskTypes = [
+    { value: '', text: 'Task Type', disabled: true },
+    { value: 'bugbounty', text: 'Bug Bounty' },
+    { value: 'ctf', text: 'Capture The Flag' },
+];
+const optionsTaskPlatforms = [
+    { value: '', text: 'Task Platform', disabled: true },
+    { value: 'linux', text: 'Linux' },
+    { value: 'windows', text: 'Windows' },
+];
+
+const websites = computed(() => store.state.writeup.websites);
+
+const optionsWebsites = computed(() => {
+    const options: {
+        value: number | null;
+        text: string;
+        disabled?: boolean;
+    }[] = websites.value.map((x) => ({ value: x.id, text: x.name }));
+    options.unshift({ value: null, text: 'Website', disabled: true });
+    return options;
+});
+
+function onChangeTags(newTags: TagInputItem[]) {
+    selected_tags.value = newTags;
+}
+
+function submitForm() {
+    const slug = slugify(name.value!, { replacement: '-', lower: true });
+    const data = {
+        name: name.value,
+        slug,
+        website_id: website.value,
+        task_type: task_type.value,
+        task_platform: task_platform.value,
+        task_url: task_url.value,
+        content: content.value,
+        tags: selected_tags.value.map((t) => ({
+            name: t.text,
+            slug: slugify(t.text, { replacement: '-', lower: true }),
+        })),
+    };
+    store.dispatch('writeup/createReport', data).then((res: Report) => {
+        router.push(`/writeup/rpt/${res.slug}`);
+    });
+}
 </script>

@@ -28,7 +28,11 @@
                     </div>
                     <div class="card-body">
                         <h6 class="card-subtitle text-muted mb-2">
-                            {{ reportDetail.website.name }} -
+                            {{
+                                reportDetail.website &&
+                                reportDetail.website.name
+                            }}
+                            -
                             {{ reportDetail.task_type_display }}
                         </h6>
                         <p class="card-text">
@@ -70,57 +74,45 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { VueginateBootstrap } from 'vueginate';
+import WriteupReportSearch from '@/components/WriteupReportSearch.vue';
+import { useStore } from '@/store';
+import type { Report } from '@/types';
 
-import WriteupReportSearch from '@/components/WriteupReportSearch';
+const store = useStore();
+const router = useRouter();
+const report_per_page = 18;
+let abort_controller: AbortController | null = null;
 
-export default {
-    name: 'WriteupReportList',
-    components: {
-        WriteupReportSearch,
-        VueginateBootstrap,
-    },
-    data() {
-        return {
-            report_per_page: 18,
-            abort_controller: null,
-        };
-    },
-    computed: {
-        ...Vuex.mapState('writeup', [
-            'reports',
-            'report_count',
-            'selected_page',
-        ]),
-    },
-    methods: {
-        ...Vuex.mapActions('writeup', ['loadReports', 'updateSelectedPage']),
-        onUpdatedSearch() {
-            this.abortSearch();
-            this.abort_controller = new AbortController();
+const reports = computed(() => store.state.writeup.reports);
+const report_count = computed(() => store.state.writeup.report_count);
+const selected_page = computed(() => store.state.writeup.selected_page);
 
-            this.updateSelectedPage(1);
+function onUpdatedSearch() {
+    abortSearch();
+    abort_controller = new AbortController();
+    store.dispatch('writeup/updateSelectedPage', 1);
+    store
+        .dispatch('writeup/loadReports', abort_controller.signal)
+        .then(() => {
+            abort_controller = null;
+        })
+        .catch(() => {});
+}
 
-            this.loadReports(this.abort_controller.signal)
-                .then(() => {
-                    this.abort_controller = null;
-                })
-                .catch(() => {});
-        },
-        onClickReportCard(reportDetail) {
-            this.$router.push(`/writeup/rpt/${reportDetail.slug}`);
-        },
-        selectPage(pageNum) {
-            this.updateSelectedPage(pageNum);
-            this.loadReports();
-        },
-        abortSearch() {
-            if (this.abort_controller) {
-                this.abort_controller.abort();
-            }
-        },
-    },
-};
+function onClickReportCard(reportDetail: Report) {
+    router.push(`/writeup/rpt/${reportDetail.slug}`);
+}
+
+function selectPage(pageNum: number) {
+    store.dispatch('writeup/updateSelectedPage', pageNum);
+    store.dispatch('writeup/loadReports');
+}
+
+function abortSearch() {
+    if (abort_controller) abort_controller.abort();
+}
 </script>

@@ -29,9 +29,17 @@
                             :key="contentDetail.id"
                         >
                             <td>{{ contentDetail.title }}</td>
-                            <td>{{ contentDetail.source.name }}</td>
                             <td>
-                                {{ contentDetail.source.source_type_display }}
+                                {{
+                                    contentDetail.source &&
+                                    contentDetail.source.name
+                                }}
+                            </td>
+                            <td>
+                                {{
+                                    contentDetail.source &&
+                                    contentDetail.source.source_type_display
+                                }}
                             </td>
                             <td>
                                 {{
@@ -105,89 +113,77 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
-
-import { TokenService } from '../storage/service';
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted } from 'vue';
 import { VueginateBootstrap } from 'vueginate';
+import WatchContentSearch from '@/components/WatchContentSearch.vue';
+import { useStore } from '@/store';
+import { TokenService } from '@/storage/service';
+import type { Content } from '@/types';
 
-import WatchContentSearch from '@/components/WatchContentSearch';
+const store = useStore();
+const content_per_page = 20;
+let abort_controller: AbortController | null = null;
+let pollInterval: ReturnType<typeof setInterval> | null = null;
 
-export default {
-    name: 'WatchContentList',
-    components: {
-        WatchContentSearch,
-        VueginateBootstrap,
-    },
-    data() {
-        return {
-            content_per_page: 20,
-            abort_controller: null,
-        };
-    },
-    computed: {
-        ...Vuex.mapState('watch', [
-            'contents',
-            'content_count',
-            'selected_page',
-        ]),
-    },
-    methods: {
-        ...Vuex.mapActions('watch', [
-            'loadContents',
-            'updateContent',
-            'updateSelectedPage',
-        ]),
-        onUpdatedSearch(pageNum = 1) {
-            this.abortSearch();
-            this.abort_controller = new AbortController();
+const contents = computed(() => store.state.watch.contents);
+const content_count = computed(() => store.state.watch.content_count);
+const selected_page = computed(() => store.state.watch.selected_page);
 
-            this.updateSelectedPage(pageNum);
+function onUpdatedSearch(pageNum = 1) {
+    abortSearch();
+    abort_controller = new AbortController();
+    store.dispatch('watch/updateSelectedPage', pageNum);
+    store
+        .dispatch('watch/loadContents', abort_controller.signal)
+        .then(() => {
+            abort_controller = null;
+        })
+        .catch(() => {});
+}
 
-            this.loadContents(this.abort_controller.signal)
-                .then(() => {
-                    this.abort_controller = null;
-                })
-                .catch(() => {});
-        },
-        pollContents() {
-            this.$options.interval = setInterval(() => {
-                this.loadContents();
-            }, 60000);
-        },
-        onClickContentView(contentDetail) {
-            let data = {
-                viewed: true,
-            };
-            this.updateContent({ content: contentDetail, data }).then(() => {
-                this.onUpdatedSearch(this.selected_page);
-            });
-        },
-        onClickContentBookmark(contentDetail) {
-            let data = {
-                bookmarked: !contentDetail.bookmarked,
-            };
-            this.updateContent({ content: contentDetail, data }).then(() => {
-                this.onUpdatedSearch(this.selected_page);
-            });
-        },
-        selectPage(pageNum) {
-            this.updateSelectedPage(pageNum);
-            this.loadContents();
-        },
-        abortSearch() {
-            if (this.abort_controller) {
-                this.abort_controller.abort();
-            }
-        },
-    },
-    created() {
-        if (TokenService.getToken()) {
-            this.pollContents();
-        }
-    },
-    beforeUnmount() {
-        clearInterval(this.$options.interval);
-    },
-};
+function pollContents() {
+    pollInterval = setInterval(() => {
+        store.dispatch('watch/loadContents');
+    }, 60000);
+}
+
+function onClickContentView(contentDetail: Content) {
+    store
+        .dispatch('watch/updateContent', {
+            content: contentDetail,
+            data: { viewed: true },
+        })
+        .then(() => {
+            onUpdatedSearch(selected_page.value);
+        });
+}
+
+function onClickContentBookmark(contentDetail: Content) {
+    store
+        .dispatch('watch/updateContent', {
+            content: contentDetail,
+            data: { bookmarked: !contentDetail.bookmarked },
+        })
+        .then(() => {
+            onUpdatedSearch(selected_page.value);
+        });
+}
+
+function selectPage(pageNum: number) {
+    store.dispatch('watch/updateSelectedPage', pageNum);
+    store.dispatch('watch/loadContents');
+}
+
+function abortSearch() {
+    if (abort_controller) abort_controller.abort();
+}
+
+onMounted(() => {
+    if (TokenService.getToken()) pollContents();
+});
+
+onUnmounted(() => {
+    if (pollInterval) clearInterval(pollInterval);
+});
 </script>

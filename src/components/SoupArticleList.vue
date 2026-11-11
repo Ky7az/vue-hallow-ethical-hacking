@@ -79,67 +79,52 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { VueginateBootstrap } from 'vueginate';
+import SoupArticleSearch from '@/components/SoupArticleSearch.vue';
+import { useStore } from '@/store';
+import type { Article } from '@/types';
 
-import SoupArticleSearch from '@/components/SoupArticleSearch';
+const store = useStore();
+const router = useRouter();
+const article_per_page = 18;
+let abort_controller: AbortController | null = null;
 
-export default {
-    name: 'SoupArticleList',
-    components: {
-        SoupArticleSearch,
-        VueginateBootstrap,
-    },
-    data() {
-        return {
-            article_per_page: 18,
-            abort_controller: null,
-        };
-    },
-    computed: {
-        ...Vuex.mapState('soup', [
-            'articles',
-            'article_count',
-            'selected_page',
-        ]),
-    },
-    methods: {
-        ...Vuex.mapActions('soup', [
-            'loadArticles',
-            'updateArticle',
-            'updateSelectedPage',
-        ]),
-        onUpdatedSearch() {
-            this.abortSearch();
-            this.abort_controller = new AbortController();
+const articles = computed(() => store.state.soup.articles);
+const article_count = computed(() => store.state.soup.article_count);
+const selected_page = computed(() => store.state.soup.selected_page);
 
-            this.updateSelectedPage(1);
+function onUpdatedSearch() {
+    abortSearch();
+    abort_controller = new AbortController();
+    store.dispatch('soup/updateSelectedPage', 1);
+    store
+        .dispatch('soup/loadArticles', abort_controller.signal)
+        .then(() => {
+            abort_controller = null;
+        })
+        .catch(() => {});
+}
 
-            this.loadArticles(this.abort_controller.signal)
-                .then(() => {
-                    this.abort_controller = null;
-                })
-                .catch(() => {});
-        },
-        onClickArticleCard(articleDetail) {
-            this.$router.push(`/soup/art/${articleDetail.slug}`);
-        },
-        onClickArticleBookmark(articleDetail) {
-            let data = {
-                bookmarked: !articleDetail.bookmarked,
-            };
-            this.updateArticle({ article: articleDetail, data });
-        },
-        selectPage(pageNum) {
-            this.updateSelectedPage(pageNum);
-            this.loadArticles();
-        },
-        abortSearch() {
-            if (this.abort_controller) {
-                this.abort_controller.abort();
-            }
-        },
-    },
-};
+function onClickArticleCard(articleDetail: Article) {
+    router.push(`/soup/art/${articleDetail.slug}`);
+}
+
+function onClickArticleBookmark(articleDetail: Article) {
+    store.dispatch('soup/updateArticle', {
+        article: articleDetail,
+        data: { bookmarked: !articleDetail.bookmarked },
+    });
+}
+
+function selectPage(pageNum: number) {
+    store.dispatch('soup/updateSelectedPage', pageNum);
+    store.dispatch('soup/loadArticles');
+}
+
+function abortSearch() {
+    if (abort_controller) abort_controller.abort();
+}
 </script>

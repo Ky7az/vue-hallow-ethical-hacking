@@ -11,7 +11,10 @@
                         class="form-control form-control-sm"
                         :value="search_text"
                         @input="
-                            onInputSearch($event.target.value, 'search_text')
+                            onInputSearch(
+                                ($event.target as HTMLInputElement).value,
+                                'search_text',
+                            )
                         "
                     />
                 </div>
@@ -64,7 +67,8 @@
                                 :checked="search_viewed"
                                 @input="
                                     onInputSearch(
-                                        $event.target.checked,
+                                        ($event.target as HTMLInputElement)
+                                            .checked,
                                         'search_viewed',
                                     )
                                 "
@@ -80,7 +84,8 @@
                                 :checked="search_bookmarked"
                                 @input="
                                     onInputSearch(
-                                        $event.target.checked,
+                                        ($event.target as HTMLInputElement)
+                                            .checked,
                                         'search_bookmarked',
                                     )
                                 "
@@ -97,74 +102,49 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
 import { debounce } from 'lodash-es';
+import TagSearch from '@/components/TagSearch.vue';
+import { useStore } from '@/store';
+import { TokenService } from '@/storage/service';
 
-import { TokenService } from '../storage/service';
+const store = useStore();
+const emit = defineEmits<{ 'updated-search': [] }>();
 
-import TagSearch from '@/components/TagSearch';
+const optionsSourceTypes = [
+    { value: 'exploit', text: 'Exploit' },
+    { value: 'security', text: 'Security' },
+    { value: 'technology', text: 'Technology' },
+    { value: 'vulnerability', text: 'Vulnerability' },
+];
+const checked_source_type = ref('');
 
-export default {
-    name: 'WatchContentSearch',
-    components: {
-        TagSearch,
-    },
-    data() {
-        return {
-            optionsSourceTypes: [
-                { value: 'exploit', text: 'Exploit' },
-                { value: 'security', text: 'Security' },
-                { value: 'technology', text: 'Technology' },
-                { value: 'vulnerability', text: 'Vulnerability' },
-            ],
-            checked_source_type: '',
-        };
-    },
-    watch: {
-        checked_source_type: function (val) {
-            this.onInputSearch(val, 'search_source_type');
-        },
-    },
-    computed: {
-        ...Vuex.mapState('watch', [
-            'tags',
-            'sources',
-            'search_text',
-            'search_tags',
-            'search_source_type',
-            'search_viewed',
-            'search_bookmarked',
-        ]),
-        ...Vuex.mapGetters('watch', ['getSourcesBySourceType']),
-        optionsSources() {
-            return this.getSourcesBySourceType(this.search_source_type).map(
-                (x) => ({
-                    value: x.slug,
-                    text: x.name,
-                }),
-            );
-        },
-    },
-    methods: {
-        ...Vuex.mapActions('watch', ['loadTags', 'updateSearchParams']),
-        onInputSearch: debounce(function (event, field) {
-            let search = {
-                search_text: this.search_text,
-                search_tags: this.search_tags,
-                search_source_type: this.search_source_type,
-                search_viewed: this.search_viewed,
-                search_bookmarked: this.search_bookmarked,
-            };
-            search[field] = event;
-            this.updateSearchParams(search);
-            this.$emit('updated-search');
-        }, 300),
-    },
-    created() {
-        if (TokenService.getToken()) {
-            this.loadTags();
-        }
-    },
-};
+const tags = computed(() => store.state.watch.tags);
+const search_text = computed(() => store.state.watch.search_text);
+const search_tags = computed(() => store.state.watch.search_tags);
+const search_source_type = computed(() => store.state.watch.search_source_type);
+const search_viewed = computed(() => store.state.watch.search_viewed);
+const search_bookmarked = computed(() => store.state.watch.search_bookmarked);
+
+const onInputSearch = debounce((value: unknown, field: string) => {
+    const search: Record<string, unknown> = {
+        search_text: search_text.value,
+        search_tags: search_tags.value,
+        search_source_type: search_source_type.value,
+        search_viewed: search_viewed.value,
+        search_bookmarked: search_bookmarked.value,
+    };
+    search[field] = value;
+    store.dispatch('watch/updateSearchParams', search);
+    emit('updated-search');
+}, 300);
+
+watch(checked_source_type, (val) => {
+    onInputSearch(val, 'search_source_type');
+});
+
+if (TokenService.getToken()) {
+    store.dispatch('watch/loadTags');
+}
 </script>

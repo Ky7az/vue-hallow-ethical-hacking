@@ -11,7 +11,10 @@
                         class="form-control form-control-sm"
                         :value="search_text"
                         @input="
-                            onInputSearch($event.target.value, 'search_text')
+                            onInputSearch(
+                                ($event.target as HTMLInputElement).value,
+                                'search_text',
+                            )
                         "
                     />
                 </div>
@@ -39,10 +42,10 @@
                         <input
                             class="form-check-input"
                             type="checkbox"
-                            :checked="search_bookmarked"
+                            :checked="search_bookmarked ?? false"
                             @input="
                                 onInputSearch(
-                                    $event.target.checked,
+                                    ($event.target as HTMLInputElement).checked,
                                     'search_bookmarked',
                                 )
                             "
@@ -55,47 +58,33 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { computed } from 'vue';
 import { debounce } from 'lodash-es';
+import TagSearch from '@/components/TagSearch.vue';
+import { useStore } from '@/store';
+import { TokenService } from '@/storage/service';
 
-import { TokenService } from '../storage/service';
+const store = useStore();
+const emit = defineEmits<{ 'updated-search': [] }>();
 
-import TagSearch from '@/components/TagSearch';
+const tags = computed(() => store.state.soup.tags);
+const search_text = computed(() => store.state.soup.search_text);
+const search_tags = computed(() => store.state.soup.search_tags);
+const search_bookmarked = computed(() => store.state.soup.search_bookmarked);
 
-export default {
-    name: 'SoupArticleSearch',
-    components: {
-        TagSearch,
-    },
-    data() {
-        return {};
-    },
-    computed: {
-        ...Vuex.mapState('soup', [
-            'tags',
-            'search_text',
-            'search_tags',
-            'search_bookmarked',
-        ]),
-    },
-    methods: {
-        ...Vuex.mapActions('soup', ['loadTags', 'updateSearchParams']),
-        onInputSearch: debounce(function (event, field) {
-            let search = {
-                search_text: this.search_text,
-                search_tags: this.search_tags,
-                search_bookmarked: this.search_bookmarked,
-            };
-            search[field] = event;
-            this.updateSearchParams(search);
-            this.$emit('updated-search');
-        }, 300),
-    },
-    created() {
-        if (TokenService.getToken()) {
-            this.loadTags();
-        }
-    },
-};
+const onInputSearch = debounce((value: unknown, field: string) => {
+    const search: Record<string, unknown> = {
+        search_text: search_text.value,
+        search_tags: search_tags.value,
+        search_bookmarked: search_bookmarked.value,
+    };
+    search[field] = value;
+    store.dispatch('soup/updateSearchParams', search);
+    emit('updated-search');
+}, 300);
+
+if (TokenService.getToken()) {
+    store.dispatch('soup/loadTags');
+}
 </script>

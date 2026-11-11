@@ -54,47 +54,40 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import slugify from 'slugify';
-
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
-import MarkdownEditor from '@/components/MarkdownEditor';
+import MarkdownEditor from '@/components/MarkdownEditor.vue';
+import { useStore } from '@/store';
+import type { TagInputItem, Article } from '@/types';
 
-export default {
-    name: 'SoupArticleCreate',
-    components: {
-        VueTagsInput,
-        MarkdownEditor,
-    },
-    data() {
-        return {
-            name: null,
-            tag: '',
-            selected_tags: [],
-            content: '',
-        };
-    },
-    methods: {
-        ...Vuex.mapActions('soup', ['createArticle']),
-        onChangeTags(newTags) {
-            this.selected_tags = newTags;
-        },
-        submitForm() {
-            let slug = slugify(this.name, { replacement: '-', lower: true });
-            let data = {
-                name: this.name,
-                slug: slug,
-                content: this.content,
-                tags: this.selected_tags.map((tag) => ({
-                    name: tag.text,
-                    slug: slugify(tag.text, { replacement: '-', lower: true }),
-                })),
-            };
-            this.createArticle(data).then((res) => {
-                this.$router.push(`/soup/art/${res.slug}`);
-            });
-        },
-    },
-};
+const store = useStore();
+const router = useRouter();
+
+const name = ref<string | null>(null);
+const tag = ref('');
+const selected_tags = ref<TagInputItem[]>([]);
+const content = ref('');
+
+function onChangeTags(newTags: TagInputItem[]) {
+    selected_tags.value = newTags;
+}
+
+function submitForm() {
+    const slug = slugify(name.value!, { replacement: '-', lower: true });
+    const data = {
+        name: name.value,
+        slug,
+        content: content.value,
+        tags: selected_tags.value.map((t) => ({
+            name: t.text,
+            slug: slugify(t.text, { replacement: '-', lower: true }),
+        })),
+    };
+    store.dispatch('soup/createArticle', data).then((res: Article) => {
+        router.push(`/soup/art/${res.slug}`);
+    });
+}
 </script>

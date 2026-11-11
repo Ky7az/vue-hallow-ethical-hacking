@@ -9,50 +9,45 @@
     />
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
+import type { TagInputItem } from '@/types';
 
-export default {
-    name: 'TagSearch',
-    components: {
-        VueTagsInput,
-    },
-    props: {
-        all_tags: Array,
-        search_tags: Array,
-    },
-    data() {
-        return {
-            search_by_tags: '',
-        };
-    },
-    computed: {
-        getCriteria() {
-            return this.search_by_tags.trim().toLowerCase();
-        },
-        autocompleteItems() {
-            const options = this.all_tags.map((tag) => ({
-                text: tag.name,
-                count: tag.count,
-            }));
-            return options;
-        },
-        filteredItems() {
-            const criteria = this.getCriteria;
-            const options = this.autocompleteItems;
-            if (criteria) {
-                return options.filter(
-                    (opt) => opt.text.toLowerCase().indexOf(criteria) > -1,
-                );
-            }
-            return options;
-        },
-    },
-    methods: {
-        onChangeTags(newTags) {
-            this.tags = newTags;
-            this.$emit('updated-tag-search', newTags);
-        },
-    },
-};
+interface AnyTag {
+    name: string;
+    count?: number;
+}
+
+const props = defineProps<{
+    all_tags: AnyTag[];
+    search_tags: TagInputItem[];
+}>();
+
+const emit = defineEmits<{
+    'updated-tag-search': [tags: TagInputItem[]];
+}>();
+
+const search_by_tags = ref('');
+
+const getCriteria = computed(() => search_by_tags.value.trim().toLowerCase());
+
+const autocompleteItems = computed(() =>
+    props.all_tags.map((tag) => ({ text: tag.name, count: tag.count })),
+);
+
+const filteredItems = computed(() => {
+    const criteria = getCriteria.value;
+    const options = autocompleteItems.value;
+    if (criteria) {
+        return options.filter(
+            (opt) => opt.text.toLowerCase().indexOf(criteria) > -1,
+        );
+    }
+    return options;
+});
+
+function onChangeTags(newTags: TagInputItem[]) {
+    emit('updated-tag-search', newTags);
+}
 </script>

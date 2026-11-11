@@ -61,7 +61,7 @@
                 <vue-tags-input
                     v-model="tag"
                     :tags="form_tags"
-                    @tags-changed="(newTags) => (form_tags = newTags)"
+                    @tags-changed="onFormTagsChanged"
                 />
             </div>
             <div class="col" align="left">
@@ -76,57 +76,52 @@
     </div>
 </template>
 
-<script>
-import Vuex from 'vuex';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import slugify from 'slugify';
-
-import { TokenService } from '../storage/service';
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
+import { useStore } from '@/store';
+import { TokenService } from '@/storage/service';
+import type { Feed, TagInputItem } from '@/types';
 
-export default {
-    name: 'WatchFeedList',
-    components: {
-        VueTagsInput,
-    },
-    data() {
-        return {
-            form_source: null,
-            tag: '',
-            form_tags: [],
-        };
-    },
-    computed: {
-        ...Vuex.mapState('watch', ['feeds', 'sources']),
-        optionsSources() {
-            return this.sources.map((x) => ({ value: x.id, text: x.name }));
-        },
-    },
-    methods: {
-        ...Vuex.mapActions('watch', ['loadFeeds', 'createFeed', 'deleteFeed']),
-        onClickFeedDelete(feedDetail) {
-            let is_ok = confirm('Delete Feed ?');
-            if (is_ok) {
-                this.deleteFeed(feedDetail);
-            }
-        },
-        onClickFeedCreate() {
-            let data = {
-                source_id: this.form_source,
-                tags: this.form_tags.map((tag) => ({
-                    name: tag.text,
-                    slug: slugify(tag.text, { replacement: '-', lower: true }),
-                })),
-            };
-            this.createFeed(data).then(() => {
-                this.form_source = null;
-                this.form_tags = [];
-            });
-        },
-    },
-    created() {
-        if (TokenService.getToken()) {
-            this.loadFeeds();
-        }
-    },
-};
+const store = useStore();
+
+const form_source = ref<number | null>(null);
+const tag = ref('');
+const form_tags = ref<TagInputItem[]>([]);
+
+const feeds = computed(() => store.state.watch.feeds);
+const sources = computed(() => store.state.watch.sources);
+
+const optionsSources = computed(() =>
+    sources.value.map((x) => ({ value: x.id, text: x.name })),
+);
+
+function onFormTagsChanged(newTags: TagInputItem[]) {
+    form_tags.value = newTags;
+}
+
+function onClickFeedDelete(feedDetail: Feed) {
+    if (confirm('Delete Feed ?')) {
+        store.dispatch('watch/deleteFeed', feedDetail);
+    }
+}
+
+function onClickFeedCreate() {
+    const data = {
+        source_id: form_source.value,
+        tags: form_tags.value.map((t) => ({
+            name: t.text,
+            slug: slugify(t.text, { replacement: '-', lower: true }),
+        })),
+    };
+    store.dispatch('watch/createFeed', data).then(() => {
+        form_source.value = null;
+        form_tags.value = [];
+    });
+}
+
+if (TokenService.getToken()) {
+    store.dispatch('watch/loadFeeds');
+}
 </script>
