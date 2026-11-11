@@ -7,13 +7,13 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from '@/store';
+import { useWriteupStore } from '@/stores/writeup';
 import { TokenService } from '@/storage/service';
 
-const store = useStore();
+const writeupStore = useWriteupStore();
 
 if (TokenService.getToken()) {
-    store.dispatch('writeup/loadWebsites');
-    store.dispatch('writeup/loadReports');
+    writeupStore.loadWebsites();
+    writeupStore.loadReports();
 }
 </script>

@@ -80,18 +80,18 @@
 import { ref, computed } from 'vue';
 import slugify from 'slugify';
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
-import { useStore } from '@/store';
+import { useWatchStore } from '@/stores/watch';
 import { TokenService } from '@/storage/service';
 import type { Feed, TagInputItem } from '@/types';
 
-const store = useStore();
+const watchStore = useWatchStore();
 
 const form_source = ref<number | null>(null);
 const tag = ref('');
 const form_tags = ref<TagInputItem[]>([]);
 
-const feeds = computed(() => store.state.watch.feeds);
-const sources = computed(() => store.state.watch.sources);
+const feeds = computed(() => watchStore.feeds);
+const sources = computed(() => watchStore.sources);
 
 const optionsSources = computed(() =>
     sources.value.map((x) => ({ value: x.id, text: x.name })),
@@ -103,7 +103,7 @@ function onFormTagsChanged(newTags: TagInputItem[]) {
 
 function onClickFeedDelete(feedDetail: Feed) {
     if (confirm('Delete Feed ?')) {
-        store.dispatch('watch/deleteFeed', feedDetail);
+        watchStore.deleteFeed(feedDetail);
     }
 }
 
@@ -115,13 +115,13 @@ function onClickFeedCreate() {
             slug: slugify(t.text, { replacement: '-', lower: true }),
         })),
     };
-    store.dispatch('watch/createFeed', data).then(() => {
+    watchStore.createFeed(data).then(() => {
         form_source.value = null;
         form_tags.value = [];
     });
 }
 
 if (TokenService.getToken()) {
-    store.dispatch('watch/loadFeeds');
+    watchStore.loadFeeds();
 }
 </script>

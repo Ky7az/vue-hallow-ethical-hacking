@@ -7,12 +7,12 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from '@/store';
+import { useSoupStore } from '@/stores/soup';
 import { TokenService } from '@/storage/service';
 
-const store = useStore();
+const soupStore = useSoupStore();
 
 if (TokenService.getToken()) {
-    store.dispatch('soup/loadArticles');
+    soupStore.loadArticles();
 }
 </script>

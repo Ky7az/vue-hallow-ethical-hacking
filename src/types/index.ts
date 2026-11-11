@@ -214,3 +214,6 @@ export interface Report {
     create_date?: string;
     write_date?: string;
 }
+
+// Write payload sent to the API (serializer write fields, e.g. `source_id`)
+export type ApiPayload = Record<string, unknown>;

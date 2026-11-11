@@ -84,24 +84,24 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { VueginateBootstrap } from 'vueginate';
 import SoupArticleSearch from '@/components/SoupArticleSearch.vue';
-import { useStore } from '@/store';
+import { useSoupStore } from '@/stores/soup';
 import type { Article } from '@/types';
 
-const store = useStore();
+const soupStore = useSoupStore();
 const router = useRouter();
 const article_per_page = 18;
 let abort_controller: AbortController | null = null;
 
-const articles = computed(() => store.state.soup.articles);
-const article_count = computed(() => store.state.soup.article_count);
-const selected_page = computed(() => store.state.soup.selected_page);
+const articles = computed(() => soupStore.articles);
+const article_count = computed(() => soupStore.article_count);
+const selected_page = computed(() => soupStore.selected_page);
 
 function onUpdatedSearch() {
     abortSearch();
     abort_controller = new AbortController();
-    store.dispatch('soup/updateSelectedPage', 1);
-    store
-        .dispatch('soup/loadArticles', abort_controller.signal)
+    soupStore.updateSelectedPage(1);
+    soupStore
+        .loadArticles(abort_controller.signal)
         .then(() => {
             abort_controller = null;
         })
@@ -113,15 +113,15 @@ function onClickArticleCard(articleDetail: Article) {
 }
 
 function onClickArticleBookmark(articleDetail: Article) {
-    store.dispatch('soup/updateArticle', {
+    soupStore.updateArticle({
         article: articleDetail,
         data: { bookmarked: !articleDetail.bookmarked },
     });
 }
 
 function selectPage(pageNum: number) {
-    store.dispatch('soup/updateSelectedPage', pageNum);
-    store.dispatch('soup/loadArticles');
+    soupStore.updateSelectedPage(pageNum);
+    soupStore.loadArticles();
 }
 
 function abortSearch() {

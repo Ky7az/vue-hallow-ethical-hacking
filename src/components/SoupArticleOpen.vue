@@ -58,21 +58,17 @@ import { useRouter, useRoute } from 'vue-router';
 import slugify from 'slugify';
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
-import { useStore } from '@/store';
+import { useSoupStore } from '@/stores/soup';
 import type { Article, TagInputItem } from '@/types';
 
-const store = useStore();
+const soupStore = useSoupStore();
 const router = useRouter();
 const route = useRoute();
 
 const tag = ref('');
 
 const articleDetail = computed(() =>
-    (
-        store.getters['soup/getArticleBySlug'] as (
-            slug: string,
-        ) => Article | undefined
-    )(route.params.slug as string),
+    soupStore.getArticleBySlug(route.params.slug as string),
 );
 
 const selectedTags = computed(
@@ -85,7 +81,7 @@ function onChangeTags(newTags: TagInputItem[]) {
 
 function onClickArticleDelete(article: Article) {
     if (confirm('Delete Article ?')) {
-        store.dispatch('soup/deleteArticle', article).then(() => {
+        soupStore.deleteArticle(article).then(() => {
             router.push('/soup');
         });
     }
@@ -99,6 +95,6 @@ function onInputArticleUpdate(event: unknown, article: Article, field: string) {
             slug: slugify(t.text, { replacement: '-', lower: true }),
         }));
     else data[field] = event;
-    store.dispatch('soup/updateArticle', { article, data });
+    soupStore.updateArticle({ article, data });
 }
 </script>

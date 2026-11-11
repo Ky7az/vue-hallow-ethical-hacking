@@ -106,10 +106,10 @@
 import { ref, computed, watch } from 'vue';
 import { debounce } from 'lodash-es';
 import TagSearch from '@/components/TagSearch.vue';
-import { useStore } from '@/store';
+import { useWatchStore, type SearchPayload } from '@/stores/watch';
 import { TokenService } from '@/storage/service';
 
-const store = useStore();
+const watchStore = useWatchStore();
 const emit = defineEmits<{ 'updated-search': [] }>();
 
 const optionsSourceTypes = [
@@ -120,23 +120,23 @@ const optionsSourceTypes = [
 ];
 const checked_source_type = ref('');
 
-const tags = computed(() => store.state.watch.tags);
-const search_text = computed(() => store.state.watch.search_text);
-const search_tags = computed(() => store.state.watch.search_tags);
-const search_source_type = computed(() => store.state.watch.search_source_type);
-const search_viewed = computed(() => store.state.watch.search_viewed);
-const search_bookmarked = computed(() => store.state.watch.search_bookmarked);
+const tags = computed(() => watchStore.tags);
+const search_text = computed(() => watchStore.search_text);
+const search_tags = computed(() => watchStore.search_tags);
+const search_source_type = computed(() => watchStore.search_source_type);
+const search_viewed = computed(() => watchStore.search_viewed);
+const search_bookmarked = computed(() => watchStore.search_bookmarked);
 
 const onInputSearch = debounce((value: unknown, field: string) => {
-    const search: Record<string, unknown> = {
+    const search: SearchPayload = {
         search_text: search_text.value,
         search_tags: search_tags.value,
         search_source_type: search_source_type.value,
         search_viewed: search_viewed.value,
         search_bookmarked: search_bookmarked.value,
     };
-    search[field] = value;
-    store.dispatch('watch/updateSearchParams', search);
+    Object.assign(search, { [field]: value });
+    watchStore.updateSearchParams(search);
     emit('updated-search');
 }, 300);
 
@@ -145,6 +145,6 @@ watch(checked_source_type, (val) => {
 });
 
 if (TokenService.getToken()) {
-    store.dispatch('watch/loadTags');
+    watchStore.loadTags();
 }
 </script>

@@ -5,7 +5,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { createApp, h } from 'vue';
 import App from './App.vue';
 import router from './router';
-import store, { key } from './store';
+import { createPinia } from 'pinia';
 import VueHotkey from 'v-hotkey3';
 import VueTimeago from 'vue-timeago3';
 
@@ -14,7 +14,7 @@ const app = createApp({
 });
 
 app.use(router);
-app.use(store, key);
+app.use(createPinia());
 app.use(VueHotkey);
 
 const timeagoOptions = {

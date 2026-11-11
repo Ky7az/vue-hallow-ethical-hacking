@@ -31,7 +31,7 @@ Hash-based routing (`createWebHashHistory`). Each route has a `title` meta field
 
 ### State Management
 
-Vuex 4 (typed modules in `src/store/modules/*.ts`) with strict mode and four namespaced modules: `soup`, `watch`, `pentest`, `writeup`. All API calls go through Vuex actions. The `pentest` module is the most complex — it manages attackers, targets, target_services, credentials, parameters, phases, vulnerabilities, tools, actions, and tasks with multi-parameter getter filters like `getActionsByPhaseAndServiceAndVulnerabilityAndTool`.
+Pinia, one options-style store per module in `src/stores/*.ts`: `useSoupStore`, `useWatchStore`, `usePentestStore`, `useWriteupStore`. All API calls go through store actions (no mutations: actions assign state directly). The `pentest` store is the most complex — it manages attackers, targets, target_services, credentials, parameters, phases, vulnerabilities, tools, actions, and tasks with multi-parameter getter filters like `getActionsByPhaseAndServiceAndVulnerabilityAndTool`.
 
 ### API Integration
 
@@ -45,14 +45,14 @@ Vuex 4 (typed modules in `src/store/modules/*.ts`) with strict mode and four nam
 
 Written in **TypeScript** (`strict`). All components use `<script setup lang="ts">` (Composition API).
 
-- Store access: `useStore()` from `@/store` (typed `Store<RootState>` via `InjectionKey`). `store.getters[...]` is untyped — cast the getter to its function signature at the call site.
+- Store access: `const pentestStore = usePentestStore()` from `@/stores/pentest`; state, getters and actions are fully typed (`pentestStore.targets`, `pentestStore.getTargetById(id)`, `pentestStore.createTarget(data)`). Create/update payloads are typed `ApiPayload` (`src/types/index.ts`) since they use serializer write fields (e.g. `source_id`).
 - Shared API types live in `src/types/index.ts`; mirror the Django serializer field names exactly (dates are `create_date` / `write_date`). Untyped third-party libs are shimmed in `src/types/shims.d.ts`.
 - No global side effects at the top level of `<script setup>` (e.g. `marked.use(...)`): that code runs on every component instance. Put one-time setup in a module under `src/utils/` (see `renderMarkdown` in `@/utils/markdown`).
 - Read form fields with `formValue(form, name)` from `@/utils/form`, not `form.<name>` (collides with built-in `HTMLFormElement` properties).
 
 - **List components**: Vueginate for pagination, AbortController to cancel in-flight requests on new searches, emit updated-search events upward
 - **Create/edit components**: `@submit.prevent`, VueTagsInput for tags, MarkdownEditor for content, slugify for URL slugs, redirect to detail on success
-- **Open/detail components**: receive route param (`:slug` or `:id`), use Vuex getter to locate item
+- **Open/detail components**: receive route param (`:slug` or `:id`), use a store getter to locate item
 - **Search resets pagination**: any filter change resets `selected_page` to 1
 
 ### Authentication

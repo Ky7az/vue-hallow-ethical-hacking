@@ -7,14 +7,14 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from '@/store';
+import { useWatchStore } from '@/stores/watch';
 import { TokenService } from '@/storage/service';
 
-const store = useStore();
+const watchStore = useWatchStore();
 
 if (TokenService.getToken()) {
-    store.dispatch('watch/loadSources');
-    store.dispatch('watch/loadFeeds');
-    store.dispatch('watch/loadContents');
+    watchStore.loadSources();
+    watchStore.loadFeeds();
+    watchStore.loadContents();
 }
 </script>

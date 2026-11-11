@@ -117,25 +117,25 @@
 import { computed, onMounted, onUnmounted } from 'vue';
 import { VueginateBootstrap } from 'vueginate';
 import WatchContentSearch from '@/components/WatchContentSearch.vue';
-import { useStore } from '@/store';
+import { useWatchStore } from '@/stores/watch';
 import { TokenService } from '@/storage/service';
 import type { Content } from '@/types';
 
-const store = useStore();
+const watchStore = useWatchStore();
 const content_per_page = 20;
 let abort_controller: AbortController | null = null;
 let pollInterval: ReturnType<typeof setInterval> | null = null;
 
-const contents = computed(() => store.state.watch.contents);
-const content_count = computed(() => store.state.watch.content_count);
-const selected_page = computed(() => store.state.watch.selected_page);
+const contents = computed(() => watchStore.contents);
+const content_count = computed(() => watchStore.content_count);
+const selected_page = computed(() => watchStore.selected_page);
 
 function onUpdatedSearch(pageNum = 1) {
     abortSearch();
     abort_controller = new AbortController();
-    store.dispatch('watch/updateSelectedPage', pageNum);
-    store
-        .dispatch('watch/loadContents', abort_controller.signal)
+    watchStore.updateSelectedPage(pageNum);
+    watchStore
+        .loadContents(abort_controller.signal)
         .then(() => {
             abort_controller = null;
         })
@@ -144,13 +144,13 @@ function onUpdatedSearch(pageNum = 1) {
 
 function pollContents() {
     pollInterval = setInterval(() => {
-        store.dispatch('watch/loadContents');
+        watchStore.loadContents();
     }, 60000);
 }
 
 function onClickContentView(contentDetail: Content) {
-    store
-        .dispatch('watch/updateContent', {
+    watchStore
+        .updateContent({
             content: contentDetail,
             data: { viewed: true },
         })
@@ -160,8 +160,8 @@ function onClickContentView(contentDetail: Content) {
 }
 
 function onClickContentBookmark(contentDetail: Content) {
-    store
-        .dispatch('watch/updateContent', {
+    watchStore
+        .updateContent({
             content: contentDetail,
             data: { bookmarked: !contentDetail.bookmarked },
         })
@@ -171,8 +171,8 @@ function onClickContentBookmark(contentDetail: Content) {
 }
 
 function selectPage(pageNum: number) {
-    store.dispatch('watch/updateSelectedPage', pageNum);
-    store.dispatch('watch/loadContents');
+    watchStore.updateSelectedPage(pageNum);
+    watchStore.loadContents();
 }
 
 function abortSearch() {

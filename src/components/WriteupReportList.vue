@@ -79,24 +79,24 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { VueginateBootstrap } from 'vueginate';
 import WriteupReportSearch from '@/components/WriteupReportSearch.vue';
-import { useStore } from '@/store';
+import { useWriteupStore } from '@/stores/writeup';
 import type { Report } from '@/types';
 
-const store = useStore();
+const writeupStore = useWriteupStore();
 const router = useRouter();
 const report_per_page = 18;
 let abort_controller: AbortController | null = null;
 
-const reports = computed(() => store.state.writeup.reports);
-const report_count = computed(() => store.state.writeup.report_count);
-const selected_page = computed(() => store.state.writeup.selected_page);
+const reports = computed(() => writeupStore.reports);
+const report_count = computed(() => writeupStore.report_count);
+const selected_page = computed(() => writeupStore.selected_page);
 
 function onUpdatedSearch() {
     abortSearch();
     abort_controller = new AbortController();
-    store.dispatch('writeup/updateSelectedPage', 1);
-    store
-        .dispatch('writeup/loadReports', abort_controller.signal)
+    writeupStore.updateSelectedPage(1);
+    writeupStore
+        .loadReports(abort_controller.signal)
         .then(() => {
             abort_controller = null;
         })
@@ -108,8 +108,8 @@ function onClickReportCard(reportDetail: Report) {
 }
 
 function selectPage(pageNum: number) {
-    store.dispatch('writeup/updateSelectedPage', pageNum);
-    store.dispatch('writeup/loadReports');
+    writeupStore.updateSelectedPage(pageNum);
+    writeupStore.loadReports();
 }
 
 function abortSearch() {

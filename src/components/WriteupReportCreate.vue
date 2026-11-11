@@ -114,10 +114,10 @@ import { useRouter } from 'vue-router';
 import slugify from 'slugify';
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
-import { useStore } from '@/store';
-import type { TagInputItem, Report } from '@/types';
+import { useWriteupStore } from '@/stores/writeup';
+import type { TagInputItem } from '@/types';
 
-const store = useStore();
+const writeupStore = useWriteupStore();
 const router = useRouter();
 
 const name = ref<string | null>(null);
@@ -140,7 +140,7 @@ const optionsTaskPlatforms = [
     { value: 'windows', text: 'Windows' },
 ];
 
-const websites = computed(() => store.state.writeup.websites);
+const websites = computed(() => writeupStore.websites);
 
 const optionsWebsites = computed(() => {
     const options: {
@@ -171,7 +171,7 @@ function submitForm() {
             slug: slugify(t.text, { replacement: '-', lower: true }),
         })),
     };
-    store.dispatch('writeup/createReport', data).then((res: Report) => {
+    writeupStore.createReport(data).then((res) => {
         router.push(`/writeup/rpt/${res.slug}`);
     });
 }

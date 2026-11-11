@@ -74,21 +74,17 @@ import { useRouter, useRoute } from 'vue-router';
 import slugify from 'slugify';
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
-import { useStore } from '@/store';
+import { useWriteupStore } from '@/stores/writeup';
 import type { Report, TagInputItem } from '@/types';
 
-const store = useStore();
+const writeupStore = useWriteupStore();
 const router = useRouter();
 const route = useRoute();
 
 const tag = ref('');
 
 const reportDetail = computed(() =>
-    (
-        store.getters['writeup/getReportBySlug'] as (
-            slug: string,
-        ) => Report | undefined
-    )(route.params.slug as string),
+    writeupStore.getReportBySlug(route.params.slug as string),
 );
 
 const selectedTags = computed(
@@ -101,7 +97,7 @@ function onChangeTags(newTags: TagInputItem[]) {
 
 function onClickReportDelete(report: Report) {
     if (confirm('Delete Report ?')) {
-        store.dispatch('writeup/deleteReport', report).then(() => {
+        writeupStore.deleteReport(report).then(() => {
             router.push('/writeup');
         });
     }
@@ -115,6 +111,6 @@ function onInputReportUpdate(event: unknown, report: Report, field: string) {
             slug: slugify(t.text, { replacement: '-', lower: true }),
         }));
     else data[field] = event;
-    store.dispatch('writeup/updateReport', { report, data });
+    writeupStore.updateReport({ report, data });
 }
 </script>

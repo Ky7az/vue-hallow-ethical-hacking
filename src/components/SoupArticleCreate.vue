@@ -60,10 +60,10 @@ import { useRouter } from 'vue-router';
 import slugify from 'slugify';
 import VueTagsInput from '@wslyhbb/vue3-tags-input';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
-import { useStore } from '@/store';
-import type { TagInputItem, Article } from '@/types';
+import { useSoupStore } from '@/stores/soup';
+import type { TagInputItem } from '@/types';
 
-const store = useStore();
+const soupStore = useSoupStore();
 const router = useRouter();
 
 const name = ref<string | null>(null);
@@ -86,7 +86,7 @@ function submitForm() {
             slug: slugify(t.text, { replacement: '-', lower: true }),
         })),
     };
-    store.dispatch('soup/createArticle', data).then((res: Article) => {
+    soupStore.createArticle(data).then((res) => {
         router.push(`/soup/art/${res.slug}`);
     });
 }

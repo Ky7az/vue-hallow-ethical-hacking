@@ -105,10 +105,10 @@
 import { ref, computed, watch } from 'vue';
 import { debounce } from 'lodash-es';
 import TagSearch from '@/components/TagSearch.vue';
-import { useStore } from '@/store';
+import { useWriteupStore, type SearchPayload } from '@/stores/writeup';
 import { TokenService } from '@/storage/service';
 
-const store = useStore();
+const writeupStore = useWriteupStore();
 const emit = defineEmits<{ 'updated-search': [] }>();
 
 const optionsTaskTypes = [
@@ -123,14 +123,14 @@ const checked_websites = ref<string[]>([]);
 const checked_task_types = ref<string[]>([]);
 const checked_task_platforms = ref<string[]>([]);
 
-const tags = computed(() => store.state.writeup.tags);
-const websites = computed(() => store.state.writeup.websites);
-const search_text = computed(() => store.state.writeup.search_text);
-const search_tags = computed(() => store.state.writeup.search_tags);
-const search_websites = computed(() => store.state.writeup.search_websites);
-const search_task_types = computed(() => store.state.writeup.search_task_types);
+const tags = computed(() => writeupStore.tags);
+const websites = computed(() => writeupStore.websites);
+const search_text = computed(() => writeupStore.search_text);
+const search_tags = computed(() => writeupStore.search_tags);
+const search_websites = computed(() => writeupStore.search_websites);
+const search_task_types = computed(() => writeupStore.search_task_types);
 const search_task_platforms = computed(
-    () => store.state.writeup.search_task_platforms,
+    () => writeupStore.search_task_platforms,
 );
 
 const optionsWebsites = computed(() =>
@@ -141,15 +141,15 @@ const optionsWebsites = computed(() =>
 );
 
 const onInputSearch = debounce((value: unknown, field: string) => {
-    const search: Record<string, unknown> = {
+    const search: SearchPayload = {
         search_text: search_text.value,
         search_tags: search_tags.value,
         search_websites: search_websites.value,
         search_task_types: search_task_types.value,
         search_task_platforms: search_task_platforms.value,
     };
-    search[field] = value;
-    store.dispatch('writeup/updateSearchParams', search);
+    Object.assign(search, { [field]: value });
+    writeupStore.updateSearchParams(search);
     emit('updated-search');
 }, 300);
 
@@ -160,6 +160,6 @@ watch(checked_task_platforms, (val) =>
 );
 
 if (TokenService.getToken()) {
-    store.dispatch('writeup/loadTags');
+    writeupStore.loadTags();
 }
 </script>
