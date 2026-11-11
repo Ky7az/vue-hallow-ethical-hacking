@@ -119,9 +119,12 @@ const optionsTaskPlatforms = [
     { value: 'linux', text: 'Linux' },
     { value: 'windows', text: 'Windows' },
 ];
-const checked_websites = ref<string[]>([]);
-const checked_task_types = ref<string[]>([]);
-const checked_task_platforms = ref<string[]>([]);
+// Restore the active filters kept in the store (e.g. when coming back to the list)
+const checked_websites = ref<string[]>([...writeupStore.search_websites]);
+const checked_task_types = ref<string[]>([...writeupStore.search_task_types]);
+const checked_task_platforms = ref<string[]>([
+    ...writeupStore.search_task_platforms,
+]);
 
 const tags = computed(() => writeupStore.tags);
 const websites = computed(() => writeupStore.websites);
