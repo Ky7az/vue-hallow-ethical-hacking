@@ -103,7 +103,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { debounce } from 'lodash-es';
+import { debouncedSearch } from '@/utils/search';
 import TagSearch from '@/components/TagSearch.vue';
 import { useWriteupStore, type SearchPayload } from '@/stores/writeup';
 import { TokenService } from '@/storage/service';
@@ -143,18 +143,17 @@ const optionsWebsites = computed(() =>
     })),
 );
 
-const onInputSearch = debounce((value: unknown, field: string) => {
-    const search: SearchPayload = {
+const onInputSearch = debouncedSearch<SearchPayload>((changes) => {
+    writeupStore.updateSearchParams({
         search_text: search_text.value,
         search_tags: search_tags.value,
         search_websites: search_websites.value,
         search_task_types: search_task_types.value,
         search_task_platforms: search_task_platforms.value,
-    };
-    Object.assign(search, { [field]: value });
-    writeupStore.updateSearchParams(search);
+        ...changes,
+    });
     emit('updated-search');
-}, 300);
+});
 
 watch(checked_websites, (val) => onInputSearch(val, 'search_websites'));
 watch(checked_task_types, (val) => onInputSearch(val, 'search_task_types'));

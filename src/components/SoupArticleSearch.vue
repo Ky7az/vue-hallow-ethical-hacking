@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { debounce } from 'lodash-es';
+import { debouncedSearch } from '@/utils/search';
 import TagSearch from '@/components/TagSearch.vue';
 import { useSoupStore, type SearchPayload } from '@/stores/soup';
 import { TokenService } from '@/storage/service';
@@ -73,16 +73,15 @@ const search_text = computed(() => soupStore.search_text);
 const search_tags = computed(() => soupStore.search_tags);
 const search_bookmarked = computed(() => soupStore.search_bookmarked);
 
-const onInputSearch = debounce((value: unknown, field: string) => {
-    const search: SearchPayload = {
+const onInputSearch = debouncedSearch<SearchPayload>((changes) => {
+    soupStore.updateSearchParams({
         search_text: search_text.value,
         search_tags: search_tags.value,
         search_bookmarked: search_bookmarked.value,
-    };
-    Object.assign(search, { [field]: value });
-    soupStore.updateSearchParams(search);
+        ...changes,
+    });
     emit('updated-search');
-}, 300);
+});
 
 if (TokenService.getToken()) {
     soupStore.loadTags();

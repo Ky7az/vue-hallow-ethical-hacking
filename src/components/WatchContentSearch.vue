@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { debounce } from 'lodash-es';
+import { debouncedSearch } from '@/utils/search';
 import TagSearch from '@/components/TagSearch.vue';
 import { useWatchStore, type SearchPayload } from '@/stores/watch';
 import { TokenService } from '@/storage/service';
@@ -127,18 +127,17 @@ const search_source_type = computed(() => watchStore.search_source_type);
 const search_viewed = computed(() => watchStore.search_viewed);
 const search_bookmarked = computed(() => watchStore.search_bookmarked);
 
-const onInputSearch = debounce((value: unknown, field: string) => {
-    const search: SearchPayload = {
+const onInputSearch = debouncedSearch<SearchPayload>((changes) => {
+    watchStore.updateSearchParams({
         search_text: search_text.value,
         search_tags: search_tags.value,
         search_source_type: search_source_type.value,
         search_viewed: search_viewed.value,
         search_bookmarked: search_bookmarked.value,
-    };
-    Object.assign(search, { [field]: value });
-    watchStore.updateSearchParams(search);
+        ...changes,
+    });
     emit('updated-search');
-}, 300);
+});
 
 watch(checked_source_type, (val) => {
     onInputSearch(val, 'search_source_type');
