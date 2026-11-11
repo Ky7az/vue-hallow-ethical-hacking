@@ -822,10 +822,10 @@
   resolved "https://registry.yarnpkg.com/@vue/tsconfig/-/tsconfig-0.9.1.tgz#6aa901e9f89242b26e1e564c98747278df6882e5"
   integrity sha512-buvjm+9NzLCJL29KY1j1991YYJ5e6275OiK+G4jtmfIb+z4POywbdm0wXusT9adVWqe0xqg70TbI7+mRx4uU9w==
 
-"@wslyhbb/vue3-tags-input@3.0.7":
-  version "3.0.7"
-  resolved "https://registry.npmjs.org/@wslyhbb/vue3-tags-input/-/vue3-tags-input-3.0.7.tgz"
-  integrity sha512-tsCH7mwUdXJt2GQl0yj5jjSSlN5wqgUYBYtt5oekED1uW3WGP3SK/JfvK5e+CNB2mwaq13gzj4VVyi/kCBH95g==
+"@wslyhbb/vue3-tags-input@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@wslyhbb/vue3-tags-input/-/vue3-tags-input-4.0.1.tgz#15f40ff96013044993230a50591f7f435481306d"
+  integrity sha512-2Wc1QfshXkvhSOniYxodr6JrbskLEbclrL8ImCuB1nKIkxaB4rz4Av4R9w5gVZaE7yuk24E2oGoutbfcHAu8wA==
   dependencies:
     vue "^3.5.8"
 
@@ -1598,10 +1598,10 @@ marked-gfm-heading-id@4.1.4:
   dependencies:
     github-slugger "^2.0.0"
 
-marked@15.0.3:
-  version "15.0.3"
-  resolved "https://registry.npmjs.org/marked/-/marked-15.0.3.tgz"
-  integrity sha512-Ai0cepvl2NHnTcO9jYDtcOEtVBNVYR31XnEA3BndO7f5As1wzpcOceSUM8FDkNLJNIODcLpDTWay/qQhqbuMvg==
+marked@18.1.2:
+  version "18.1.2"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-18.1.2.tgz#358c831ed0c4278f97e517af6769e2f213b048ac"
+  integrity sha512-DfOnvLAQ6WYeWxWO1u4RyFOeqyHup6dks5PPqnoFiooU7ipRvidO/2j8plhAHIiZg574E9ZlzSjUiPMLAzFkgg==
 
 math-intrinsics@^1.1.0:
   version "1.1.0"
