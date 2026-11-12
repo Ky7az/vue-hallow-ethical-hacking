@@ -5,6 +5,14 @@
                 <router-link class="btn btn-secondary" to="/watch/new"
                     >New</router-link
                 >
+                <button
+                    type="button"
+                    class="btn btn-secondary ms-2"
+                    v-if="selected_ids.size"
+                    @click="onClickSkipSelected"
+                >
+                    Skip selected ({{ selected_ids.size }})
+                </button>
             </div>
         </div>
         <WatchContentSearch @updated-search="onUpdatedSearch" />
@@ -13,6 +21,18 @@
                 <table class="table table-hover" v-if="contents.length">
                     <thead>
                         <tr>
+                            <th>
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    title="Select all"
+                                    :checked="allSelected"
+                                    :indeterminate="
+                                        selected_ids.size > 0 && !allSelected
+                                    "
+                                    @change="toggleSelectAll"
+                                />
+                            </th>
                             <th>Title</th>
                             <th>Source</th>
                             <th>Type</th>
@@ -27,7 +47,24 @@
                         <tr
                             v-for="contentDetail in contents"
                             :key="contentDetail.id"
+                            class="clickable"
+                            :class="{
+                                'table-active': selected_ids.has(
+                                    contentDetail.id,
+                                ),
+                            }"
+                            @click="onClickRow($event, contentDetail.id)"
                         >
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    :checked="
+                                        selected_ids.has(contentDetail.id)
+                                    "
+                                    @change="toggleSelect(contentDetail.id)"
+                                />
+                            </td>
                             <td>{{ contentDetail.title }}</td>
                             <td>
                                 {{
@@ -114,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { VueginateBootstrap } from 'vueginate';
 import WatchContentSearch from '@/components/WatchContentSearch.vue';
 import { useWatchStore } from '@/stores/watch';
@@ -129,6 +166,47 @@ let pollInterval: ReturnType<typeof setInterval> | null = null;
 const contents = computed(() => watchStore.contents);
 const content_count = computed(() => watchStore.content_count);
 const selected_page = computed(() => watchStore.selected_page);
+const selected_ids = ref<Set<number>>(new Set());
+const allSelected = computed(
+    () =>
+        contents.value.length > 0 &&
+        contents.value.every((c) => selected_ids.value.has(c.id)),
+);
+
+// Drop selected ids that are no longer displayed (page change, search, polling)
+watch(contents, (list) => {
+    const visible = new Set(list.map((c) => c.id));
+    selected_ids.value = new Set(
+        [...selected_ids.value].filter((id) => visible.has(id)),
+    );
+});
+
+function toggleSelect(id: number) {
+    const ids = new Set(selected_ids.value);
+    if (ids.has(id)) ids.delete(id);
+    else ids.add(id);
+    selected_ids.value = ids;
+}
+
+function onClickRow(event: MouseEvent, id: number) {
+    // Ignore clicks on the checkbox and the row actions (View, Skip, Bookmark)
+    if ((event.target as HTMLElement).closest('a, i, input, button')) return;
+    toggleSelect(id);
+}
+
+function toggleSelectAll() {
+    selected_ids.value = allSelected.value
+        ? new Set()
+        : new Set(contents.value.map((c) => c.id));
+}
+
+function onClickSkipSelected() {
+    if (!selected_ids.value.size) return;
+    watchStore.bulkViewContents([...selected_ids.value]).then(() => {
+        selected_ids.value = new Set();
+        onUpdatedSearch(selected_page.value);
+    });
+}
 
 function onUpdatedSearch(pageNum = 1) {
     abortSearch();
@@ -187,3 +265,9 @@ onUnmounted(() => {
     if (pollInterval) clearInterval(pollInterval);
 });
 </script>
+
+<style scoped>
+.clickable {
+    cursor: pointer;
+}
+</style>

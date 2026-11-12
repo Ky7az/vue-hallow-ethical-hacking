@@ -138,6 +138,13 @@ export const useWatchStore = defineStore('watch', {
             this.contents.unshift(updated);
             return updated;
         },
+        async bulkViewContents(ids: number[]) {
+            await axios.post(
+                `${PROTO}://${API_HOST}/api/watch/contents/bulk_view/`,
+                { ids },
+                AxiosConfig,
+            );
+        },
         async deleteContent(content: Content) {
             await axios.delete(
                 `${PROTO}://${API_HOST}/api/watch/contents/${content.id}/`,
