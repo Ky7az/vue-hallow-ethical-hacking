@@ -7,7 +7,7 @@ import { gfmHeadingId, getHeadingList } from 'marked-gfm-heading-id';
  * every component instance and would stack extensions/hooks (duplicated TOC).
  */
 const markdown = new Marked(
-    { pedantic: false, gfm: true, breaks: false },
+    { pedantic: false, gfm: true, breaks: true },
     gfmHeadingId({ prefix: 'heading-' }),
     {
         hooks: {
